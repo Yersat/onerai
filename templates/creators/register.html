@@ -1,0 +1,146 @@
+{% extends "base/base.html" %} {% load static %} {% block title %}Регистрация
+создателя | onerai{% endblock %} {% block content %}
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card shadow-sm">
+        <div class="card-body p-4">
+          <h2 class="text-center mb-4">Регистрация создателя</h2>
+
+          {% if messages %}
+          <div class="messages mb-4">
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+          </div>
+          {% endif %}
+
+          <form method="post" class="needs-validation" novalidate>
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ request.GET.next }}" />
+
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label
+                  for="{{ form.first_name.id_for_label }}"
+                  class="form-label"
+                  >Имя</label
+                >
+                {{ form.first_name }} {% if form.first_name.errors %}
+                <div class="invalid-feedback d-block">
+                  {{ form.first_name.errors }}
+                </div>
+                {% endif %}
+              </div>
+              <div class="col-md-6 mb-3">
+                <label
+                  for="{{ form.last_name.id_for_label }}"
+                  class="form-label"
+                  >Фамилия</label
+                >
+                {{ form.last_name }} {% if form.last_name.errors %}
+                <div class="invalid-feedback d-block">
+                  {{ form.last_name.errors }}
+                </div>
+                {% endif %}
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="{{ form.username.id_for_label }}" class="form-label"
+                >Имя пользователя</label
+              >
+              {{ form.username }} {% if form.username.errors %}
+              <div class="invalid-feedback d-block">
+                {{ form.username.errors }}
+              </div>
+              {% endif %}
+            </div>
+
+            <div class="mb-3">
+              <label for="{{ form.email.id_for_label }}" class="form-label"
+                >Email</label
+              >
+              {{ form.email }} {% if form.email.errors %}
+              <div class="invalid-feedback d-block">
+                {{ form.email.errors }}
+              </div>
+              {% endif %}
+            </div>
+
+            <div class="mb-3">
+              <label for="{{ form.password1.id_for_label }}" class="form-label"
+                >Пароль</label
+              >
+              {{ form.password1 }} {% if form.password1.errors %}
+              <div class="invalid-feedback d-block">
+                {{ form.password1.errors }}
+              </div>
+              {% endif %}
+            </div>
+
+            <div class="mb-3">
+              <label for="{{ form.password2.id_for_label }}" class="form-label"
+                >Подтвердите пароль</label
+              >
+              {{ form.password2 }} {% if form.password2.errors %}
+              <div class="invalid-feedback d-block">
+                {{ form.password2.errors }}
+              </div>
+              {% endif %}
+            </div>
+
+            <div class="mb-3">
+              <label for="{{ form.bio.id_for_label }}" class="form-label"
+                >О себе</label
+              >
+              {{ form.bio }} {% if form.bio.errors %}
+              <div class="invalid-feedback d-block">{{ form.bio.errors }}</div>
+              {% endif %}
+            </div>
+
+            <div class="mb-3">
+              <label
+                for="{{ form.portfolio_url.id_for_label }}"
+                class="form-label"
+                >Портфолио (URL)</label
+              >
+              {{ form.portfolio_url }} {% if form.portfolio_url.errors %}
+              <div class="invalid-feedback d-block">
+                {{ form.portfolio_url.errors }}
+              </div>
+              {% endif %}
+            </div>
+
+            <div class="mb-3">
+              <label
+                for="{{ form.instagram_handle.id_for_label }}"
+                class="form-label"
+                >Instagram</label
+              >
+              {{ form.instagram_handle }} {% if form.instagram_handle.errors %}
+              <div class="invalid-feedback d-block">
+                {{ form.instagram_handle.errors }}
+              </div>
+              {% endif %}
+            </div>
+
+            <div class="d-grid gap-2">
+              <button type="submit" class="btn btn-primary btn-lg">
+                Зарегистрироваться
+              </button>
+            </div>
+          </form>
+
+          <div class="text-center mt-4">
+            <p class="mb-0">
+              Уже есть аккаунт?
+              <a href="{% url 'creators:login' %}">Войти</a>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

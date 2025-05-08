@@ -24,6 +24,7 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("", include("store.urls")),
     path("accounts/", include("django.contrib.auth.urls")),
+    path("creators/", include("creators.urls")),
 ]
 
 # Serve media files during development

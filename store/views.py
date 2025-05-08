@@ -2,6 +2,8 @@ import os
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from django.core.exceptions import PermissionDenied
 from .models import Product, Category
 
 User = get_user_model()
@@ -72,8 +74,9 @@ def cart(request):
 
 @login_required
 def add_product(request):
+    # Since we're using the Creator model as our user model,
+    # all authenticated users are creators
     if request.method == "POST":
-        # Handle form submission
-        # This will be implemented later
+        # Handle product creation (to be implemented)
         pass
     return render(request, "store/add_product.html")
