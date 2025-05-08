@@ -1,0 +1,449 @@
+{% extends "base/base.html" %} {% load static %} {% block title %} onerai. |
+Главная{% endblock %} {% block content %}
+<!-- Hero section -->
+<section
+  class="hero-section"
+  style="
+    background-image: url('https://images.unsplash.com/photo-1523381294911-8d3cead13475?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2000&q=80');
+  "
+>
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-6 hero-content">
+        <h1 class="display-4 fw-bold mb-3">
+          Создавайте. Продавайте. <br />Зарабатывайте.
+        </h1>
+        <p class="lead mb-4">
+          Реализуйте свои творческие идеи без производственных затрат. Печать по
+          требованию для дизайнеров и брендов в Казахстане.
+        </p>
+        <div class="hero-buttons">
+          <a
+            href="{% url 'store:add_product' %}"
+            class="btn btn-primary btn-lg me-2 mb-2 mb-md-0"
+          >
+            <i class="fas fa-plus-circle me-2"></i>Создать дизайн
+          </a>
+          <a
+            href="{% url 'store:products' %}"
+            class="btn btn-outline-light btn-lg"
+          >
+            <i class="fas fa-shopping-bag me-2"></i>В магазин
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Features section -->
+<section class="py-5">
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-md-4">
+        <div class="card h-100">
+          <div class="card-body text-center p-4">
+            <div class="feature-icon mb-4">
+              <i class="fas fa-palette fa-3x text-primary"></i>
+            </div>
+            <h3 class="h4 mb-3">Дизайн</h3>
+            <p class="mb-0">
+              Загрузите свои уникальные дизайны. Мы поддерживаем высокое
+              качество печати для четкого отображения каждой детали.
+            </p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card h-100">
+          <div class="card-body text-center p-4">
+            <div class="feature-icon mb-4">
+              <i class="fas fa-store fa-3x text-primary"></i>
+            </div>
+            <h3 class="h4 mb-3">Продажи</h3>
+            <p class="mb-0">
+              Публикуйте свои товары в магазине. Мы обеспечиваем видимость и
+              привлекаем потенциальных покупателей.
+            </p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card h-100">
+          <div class="card-body text-center p-4">
+            <div class="feature-icon mb-4">
+              <i class="fas fa-money-bill-wave fa-3x text-primary"></i>
+            </div>
+            <h3 class="h4 mb-3">Прибыль</h3>
+            <p class="mb-0">
+              Получайте доход с каждой продажи. Мы берем на себя всю логистику,
+              печать и доставку товаров клиентам.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Categories section -->
+<section class="py-5 bg-dark">
+  <div class="container">
+    <div class="text-center mb-5">
+      <h2 class="fw-bold">Популярные категории</h2>
+      <p class="lead">Выберите категорию продукта для вашего дизайна</p>
+    </div>
+
+    <div class="row g-4">
+      <div class="col-md-4">
+        <a
+          href="{% url 'store:products' %}?category=Футболки"
+          class="text-decoration-none"
+        >
+          <div class="category-item">
+            <img
+              src="https://images.unsplash.com/photo-1576566588028-4147f3842f27?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=700&q=80"
+              alt="Футболки"
+              class="img-fluid"
+            />
+            <div class="category-name text-center">Футболки</div>
+          </div>
+        </a>
+      </div>
+      <div class="col-md-4">
+        <a
+          href="{% url 'store:products' %}?category=Худи"
+          class="text-decoration-none"
+        >
+          <div class="category-item">
+            <img
+              src="https://images.unsplash.com/photo-1556821840-3a63f95609a7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=700&q=80"
+              alt="Худи"
+              class="img-fluid"
+            />
+            <div class="category-name text-center">Худи</div>
+          </div>
+        </a>
+      </div>
+      <div class="col-md-4">
+        <a
+          href="{% url 'store:products' %}?category=Аксессуары"
+          class="text-decoration-none"
+        >
+          <div class="category-item">
+            <img
+              src="https://images.unsplash.com/photo-1589810635657-232948472d98?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=700&q=80"
+              alt="Аксессуары"
+              class="img-fluid"
+            />
+            <div class="category-name text-center">Аксессуары</div>
+          </div>
+        </a>
+      </div>
+    </div>
+
+    <div class="text-center mt-5">
+      <a href="{% url 'store:products' %}" class="btn btn-outline-light btn-lg"
+        >Все категории</a
+      >
+    </div>
+  </div>
+</section>
+
+<!-- New arrivals section -->
+<section class="py-5">
+  <div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h2 class="fw-bold mb-0">Новые поступления</h2>
+      <a
+        href="{% url 'store:products' %}"
+        class="btn btn-link text-decoration-none"
+        >Показать все <i class="fas fa-arrow-right ms-2"></i
+      ></a>
+    </div>
+
+    {% if recent_products %}
+    <div class="row g-4">
+      {% for product in recent_products %}
+      <div class="col-6 col-md-4 col-lg-3">
+        <div class="product-card card h-100">
+          <div class="card-img-top-container">
+            {% if product.image_path %}
+            <img
+              src="{% static product.image_path %}"
+              class="card-img-top"
+              alt="{{ product.name }}"
+            />
+            {% else %}
+            <div class="d-flex justify-content-center align-items-center h-100">
+              <i class="fas fa-tshirt fa-3x text-light"></i>
+            </div>
+            {% endif %}
+            <span class="badge bg-primary category-badge"
+              >{{ product.category }}</span
+            >
+            <div class="quick-actions">
+              <a
+                href="#"
+                class="action-btn"
+                data-bs-toggle="tooltip"
+                title="В избранное"
+              >
+                <i class="fas fa-heart"></i>
+              </a>
+              <a
+                href="#"
+                class="action-btn"
+                data-bs-toggle="tooltip"
+                title="Быстрый просмотр"
+              >
+                <i class="fas fa-eye"></i>
+              </a>
+              <a
+                href="#"
+                class="action-btn"
+                data-bs-toggle="tooltip"
+                title="В корзину"
+              >
+                <i class="fas fa-shopping-cart"></i>
+              </a>
+            </div>
+          </div>
+          <div class="card-body">
+            <h5 class="card-title">{{ product.name }}</h5>
+            <p class="price mb-3">{{ product.price }} ₸</p>
+            <a
+              href="{% url 'store:product_detail' product.id %}"
+              class="btn btn-outline-primary w-100"
+              >Подробнее</a
+            >
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="alert alert-info">
+      <div class="d-flex align-items-center">
+        <i class="fas fa-info-circle fa-2x me-3"></i>
+        <div>
+          <p class="mb-0">
+            Пока нет доступных товаров. Станьте первым, кто добавит свой
+            уникальный дизайн!
+          </p>
+          <a href="{% url 'store:add_product' %}" class="btn btn-primary mt-3"
+            >Добавить товар</a
+          >
+        </div>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</section>
+
+<!-- Why choose us section -->
+<section class="py-5 bg-dark">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-6 pe-lg-5">
+        <h2 class="fw-bold mb-4">Почему выбирают нас</h2>
+        <div class="mb-4">
+          <h4>
+            <i class="fas fa-check-circle text-primary me-2"></i> Никаких
+            начальных вложений
+          </h4>
+          <p class="ms-4 mb-4">
+            Не нужно покупать товары для хранения или беспокоиться о запасах. Мы
+            изготавливаем товары по мере поступления заказов.
+          </p>
+
+          <h4>
+            <i class="fas fa-check-circle text-primary me-2"></i> Высокое
+            качество печати
+          </h4>
+          <p class="ms-4 mb-4">
+            Мы используем современное оборудование и качественные материалы для
+            создания продукции, которая будет радовать клиентов.
+          </p>
+
+          <h4>
+            <i class="fas fa-check-circle text-primary me-2"></i> Полная
+            логистика
+          </h4>
+          <p class="ms-4 mb-4">
+            Мы берем на себя упаковку и доставку всех заказов, позволяя вам
+            сосредоточиться на дизайне и маркетинге.
+          </p>
+
+          <h4>
+            <i class="fas fa-check-circle text-primary me-2"></i> Широкая
+            аудитория
+          </h4>
+          <p class="ms-4">
+            Получите доступ к растущей аудитории покупателей по всему
+            Казахстану, которые ищут уникальные дизайнерские товары.
+          </p>
+        </div>
+        <a href="{% url 'store:add_product' %}" class="btn btn-primary btn-lg"
+          >Начать сейчас</a
+        >
+      </div>
+
+      <div class="col-lg-6 mt-5 mt-lg-0">
+        <div class="ratio ratio-16x9 h-100">
+          <iframe
+            src="https://www.youtube.com/embed/dQw4w9WgXcQ"
+            title="Как работает печать по требованию"
+            allowfullscreen
+          ></iframe>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Testimonials section -->
+<section class="py-5">
+  <div class="container">
+    <div class="text-center mb-5">
+      <h2 class="fw-bold">Отзывы наших клиентов</h2>
+      <p class="lead">Узнайте, что говорят о нас дизайнеры и покупатели</p>
+    </div>
+
+    <div class="row g-4">
+      <div class="col-md-4">
+        <div class="card h-100 p-4">
+          <div class="d-flex mb-3">
+            <div class="text-primary me-2">
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+            </div>
+            <div>5.0</div>
+          </div>
+          <p class="mb-4">
+            «Я начинающий дизайнер, и Модный Принт помог мне запустить свой
+            бренд без огромных вложений. Качество печати отличное, клиенты
+            довольны!»
+          </p>
+          <div class="d-flex align-items-center mt-auto">
+            <div class="me-3">
+              <div
+                class="rounded-circle bg-primary text-white fw-bold d-flex align-items-center justify-content-center"
+                style="width: 50px; height: 50px"
+              >
+                АК
+              </div>
+            </div>
+            <div>
+              <h5 class="mb-0">Алексей К.</h5>
+              <p class="small mb-0">Дизайнер, Алматы</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="card h-100 p-4">
+          <div class="d-flex mb-3">
+            <div class="text-primary me-2">
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star-half-alt"></i>
+            </div>
+            <div>4.5</div>
+          </div>
+          <p class="mb-4">
+            «Очень доволен сотрудничеством с Модный Принт. Процесс загрузки
+            дизайна интуитивно понятен, а поддержка всегда готова помочь.
+            Рекомендую!»
+          </p>
+          <div class="d-flex align-items-center mt-auto">
+            <div class="me-3">
+              <div
+                class="rounded-circle bg-primary text-white fw-bold d-flex align-items-center justify-content-center"
+                style="width: 50px; height: 50px"
+              >
+                ДН
+              </div>
+            </div>
+            <div>
+              <h5 class="mb-0">Дина Н.</h5>
+              <p class="small mb-0">Иллюстратор, Нур-Султан</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="card h-100 p-4">
+          <div class="d-flex mb-3">
+            <div class="text-primary me-2">
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+            </div>
+            <div>5.0</div>
+          </div>
+          <p class="mb-4">
+            «Купила футболку с авторским принтом — качество превзошло ожидания!
+            Доставка была быстрой, упаковка аккуратной. Буду заказывать еще.»
+          </p>
+          <div class="d-flex align-items-center mt-auto">
+            <div class="me-3">
+              <div
+                class="rounded-circle bg-primary text-white fw-bold d-flex align-items-center justify-content-center"
+                style="width: 50px; height: 50px"
+              >
+                МТ
+              </div>
+            </div>
+            <div>
+              <h5 class="mb-0">Марат Т.</h5>
+              <p class="small mb-0">Покупатель, Караганда</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA section -->
+<section class="py-5 bg-primary text-white">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-lg-8 text-center text-lg-start">
+        <h2 class="fw-bold mb-3">Готовы начать свой бизнес?</h2>
+        <p class="lead mb-lg-0">
+          Присоединяйтесь к сотням дизайнеров, которые уже зарабатывают с Модный
+          Принт.
+        </p>
+      </div>
+      <div class="col-lg-4 text-center text-lg-end mt-4 mt-lg-0">
+        <a href="{% url 'store:add_product' %}" class="btn btn-light btn-lg"
+          >Загрузить дизайн сейчас</a
+        >
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %} {% block scripts %}
+<script>
+  // Initialize tooltips for product quick action buttons
+  window.addEventListener("load", function () {
+    var quickActionButtons = document.querySelectorAll(".action-btn");
+    if (quickActionButtons.length > 0) {
+      quickActionButtons.forEach(function (button) {
+        new bootstrap.Tooltip(button);
+      });
+    }
+  });
+</script>
+{% endblock %}
