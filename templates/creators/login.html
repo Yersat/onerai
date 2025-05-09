@@ -5,7 +5,7 @@
     <div class="col-md-6">
       <div class="card shadow-sm">
         <div class="card-body p-4">
-          <h2 class="text-center mb-4">Creator Login</h2>
+          <h2 class="text-center mb-4">Вход для создателей</h2>
 
           {% if messages %}
           <div class="messages mb-4">
@@ -16,7 +16,9 @@
           {% endif %}
 
           <form method="post" class="needs-validation" novalidate>
-            {% csrf_token %} {% for field in form %}
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ next }}" />
+            {% for field in form %}
             <div class="mb-3">
               <label for="{{ field.id_for_label }}" class="form-label"
                 >{{ field.label }}</label
@@ -29,15 +31,15 @@
 
             <div class="d-grid gap-2">
               <button type="submit" class="btn btn-primary btn-lg">
-                Login
+                Войти
               </button>
             </div>
           </form>
 
           <div class="text-center mt-4">
             <p class="mb-0">
-              Don't have an account?
-              <a href="{% url 'creators:register' %}">Register as a Creator</a>
+              Нет аккаунта?
+              <a href="{% url 'creators:register' %}{% if next %}?next={{ next }}{% endif %}">Зарегистрироваться</a>
             </p>
           </div>
         </div>

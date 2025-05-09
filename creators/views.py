@@ -36,11 +36,13 @@ def login_creator(request):
                 login(request, user)
                 messages.success(request, f"Welcome back, {user.get_full_name()}!")
                 # Get the next parameter or default to home
-                next_url = request.GET.get("next", "store:index")
-                return redirect(next_url)
+                next_url = request.POST.get("next") or request.GET.get("next")
+                if next_url:
+                    return redirect(next_url)
+                return redirect("store:index")
     else:
         form = CreatorLoginForm()
-    return render(request, "creators/login.html", {"form": form})
+    return render(request, "creators/login.html", {"form": form, "next": request.GET.get("next", "")})
 
 
 @login_required

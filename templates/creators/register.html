@@ -18,13 +18,14 @@
           <form method="post" class="needs-validation" novalidate>
             {% csrf_token %}
             <input type="hidden" name="next" value="{{ request.GET.next }}" />
+            <p class="text-muted mb-4">Поля, отмеченные звездочкой (*), обязательны для заполнения.</p>
 
             <div class="row">
               <div class="col-md-6 mb-3">
                 <label
                   for="{{ form.first_name.id_for_label }}"
                   class="form-label"
-                  >Имя</label
+                  >Имя *</label
                 >
                 {{ form.first_name }} {% if form.first_name.errors %}
                 <div class="invalid-feedback d-block">
@@ -36,7 +37,7 @@
                 <label
                   for="{{ form.last_name.id_for_label }}"
                   class="form-label"
-                  >Фамилия</label
+                  >Фамилия *</label
                 >
                 {{ form.last_name }} {% if form.last_name.errors %}
                 <div class="invalid-feedback d-block">
@@ -48,7 +49,7 @@
 
             <div class="mb-3">
               <label for="{{ form.username.id_for_label }}" class="form-label"
-                >Имя пользователя</label
+                >Логин *</label
               >
               {{ form.username }} {% if form.username.errors %}
               <div class="invalid-feedback d-block">
@@ -59,7 +60,7 @@
 
             <div class="mb-3">
               <label for="{{ form.email.id_for_label }}" class="form-label"
-                >Email</label
+                >Email *</label
               >
               {{ form.email }} {% if form.email.errors %}
               <div class="invalid-feedback d-block">
@@ -70,7 +71,7 @@
 
             <div class="mb-3">
               <label for="{{ form.password1.id_for_label }}" class="form-label"
-                >Пароль</label
+                >Пароль *</label
               >
               {{ form.password1 }} {% if form.password1.errors %}
               <div class="invalid-feedback d-block">
@@ -81,7 +82,7 @@
 
             <div class="mb-3">
               <label for="{{ form.password2.id_for_label }}" class="form-label"
-                >Подтвердите пароль</label
+                >Подтвердите пароль *</label
               >
               {{ form.password2 }} {% if form.password2.errors %}
               <div class="invalid-feedback d-block">
@@ -125,10 +126,14 @@
               {% endif %}
             </div>
 
-            <div class="d-grid gap-2">
-              <button type="submit" class="btn btn-primary btn-lg">
-                Зарегистрироваться
-              </button>
+            <div class="row mt-4">
+              <div class="col-12">
+                <div class="d-grid gap-2">
+                  <button type="submit" class="btn btn-primary btn-lg">
+                    Зарегистрироваться
+                  </button>
+                </div>
+              </div>
             </div>
           </form>
 
@@ -143,4 +148,22 @@
     </div>
   </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Form validation
+    const form = document.querySelector('.needs-validation');
+    if (form) {
+      form.addEventListener('submit', function(event) {
+        if (!form.checkValidity()) {
+          event.preventDefault();
+          event.stopPropagation();
+        }
+        form.classList.add('was-validated');
+      });
+    }
+  });
+</script>
 {% endblock %}

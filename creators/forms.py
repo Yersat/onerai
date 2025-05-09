@@ -5,12 +5,46 @@ from .models import CreatorProfile
 
 
 class CreatorRegistrationForm(UserCreationForm):
-    email = forms.EmailField(required=True)
-    first_name = forms.CharField(max_length=30, required=True)
-    last_name = forms.CharField(max_length=30, required=True)
-    bio = forms.CharField(widget=forms.Textarea, required=False)
-    portfolio_url = forms.URLField(required=False)
-    instagram_handle = forms.CharField(max_length=30, required=False)
+    email = forms.EmailField(
+        required=True,
+        widget=forms.EmailInput(attrs={"class": "form-control form-control-lg"})
+    )
+    first_name = forms.CharField(
+        max_length=30,
+        required=True,
+        widget=forms.TextInput(attrs={"class": "form-control form-control-lg"})
+    )
+    last_name = forms.CharField(
+        max_length=30,
+        required=True,
+        widget=forms.TextInput(attrs={"class": "form-control form-control-lg"})
+    )
+    username = forms.CharField(
+        max_length=150,
+        required=True,
+        widget=forms.TextInput(attrs={"class": "form-control form-control-lg"})
+    )
+    password1 = forms.CharField(
+        required=True,
+        widget=forms.PasswordInput(attrs={"class": "form-control form-control-lg"})
+    )
+    password2 = forms.CharField(
+        required=True,
+        widget=forms.PasswordInput(attrs={"class": "form-control form-control-lg"})
+    )
+    bio = forms.CharField(
+        widget=forms.Textarea(attrs={"class": "form-control", "rows": 5}),
+        required=False
+    )
+    portfolio_url = forms.URLField(
+        required=False,
+        widget=forms.URLInput(attrs={"class": "form-control form-control-lg"})
+    )
+    instagram_handle = forms.CharField(
+        max_length=30,
+        required=False,
+        widget=forms.TextInput(attrs={"class": "form-control form-control-lg"})
+    )
 
     class Meta:
         model = User
