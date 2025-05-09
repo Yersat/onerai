@@ -1,10 +1,8 @@
-{% extends 'base/base.html' %} {% load static %} {% block title %}Создать дизайн
-- onerai{% endblock %} {% block content %}
-<!-- Create product header -->
+{% extends 'base/base.html' %} {% load static %} {% block title %}Дизайнер продукта{% endblock %} {% block content %}
+<!-- Product designer header -->
 <section class="py-4 bg-dark">
   <div class="container">
-    <h1 class="h2 fw-bold mb-2">Создать новый дизайн</h1>
-    <p class="lead mb-0">Загрузите свой дизайн и начните зарабатывать</p>
+    <h1 class="h2 fw-bold mb-0">Дизайнер продукта</h1>
   </div>
 </section>
 
@@ -131,38 +129,10 @@
                         <input
                           class="form-check-input"
                           type="checkbox"
-                          value="gray"
-                          id="color-gray"
-                          name="colors[]"
-                          checked
-                        />
-                        <label class="form-check-label" for="color-gray">
-                          Серый
-                        </label>
-                      </div>
-                    </div>
-                    <div class="col-4">
-                      <div class="form-check">
-                        <input
-                          class="form-check-input"
-                          type="checkbox"
-                          value="blue"
-                          id="color-blue"
-                          name="colors[]"
-                        />
-                        <label class="form-check-label" for="color-blue">
-                          Синий
-                        </label>
-                      </div>
-                    </div>
-                    <div class="col-4">
-                      <div class="form-check">
-                        <input
-                          class="form-check-input"
-                          type="checkbox"
                           value="red"
                           id="color-red"
                           name="colors[]"
+                          checked
                         />
                         <label class="form-check-label" for="color-red">
                           Красный
@@ -174,12 +144,58 @@
                         <input
                           class="form-check-input"
                           type="checkbox"
+                          value="blue"
+                          id="color-blue"
+                          name="colors[]"
+                          checked
+                        />
+                        <label class="form-check-label" for="color-blue">
+                          Синий
+                        </label>
+                      </div>
+                    </div>
+                    <div class="col-4">
+                      <div class="form-check">
+                        <input
+                          class="form-check-input"
+                          type="checkbox"
+                          value="yellow"
+                          id="color-yellow"
+                          name="colors[]"
+                          checked
+                        />
+                        <label class="form-check-label" for="color-yellow">
+                          Желтый
+                        </label>
+                      </div>
+                    </div>
+                    <div class="col-4">
+                      <div class="form-check">
+                        <input
+                          class="form-check-input"
+                          type="checkbox"
                           value="green"
                           id="color-green"
                           name="colors[]"
+                          checked
                         />
                         <label class="form-check-label" for="color-green">
                           Зеленый
+                        </label>
+                      </div>
+                    </div>
+                    <div class="col-4">
+                      <div class="form-check">
+                        <input
+                          class="form-check-input"
+                          type="checkbox"
+                          value="grey"
+                          id="color-grey"
+                          name="colors[]"
+                          checked
+                        />
+                        <label class="form-check-label" for="color-grey">
+                          Серый
                         </label>
                       </div>
                     </div>
@@ -205,104 +221,114 @@
                   </div>
                 </div>
 
-                <!-- Image upload -->
+                <!-- Product Designer and Image Upload -->
                 <div class="col-12">
                   <h4 class="border-bottom pb-3 mb-4 mt-3">
-                    Загрузка изображения
+                    Дизайн футболки
                   </h4>
                 </div>
 
                 <div class="col-12">
-                  <div class="image-upload-container">
-                    <div class="row align-items-center">
-                      <div class="col-lg-6">
-                        <div class="upload-box mb-4 mb-lg-0">
-                          <label for="image" class="upload-label">
-                            <div
-                              class="upload-placeholder text-center p-5"
-                              id="upload-placeholder"
-                            >
-                              <i
-                                class="fas fa-cloud-upload-alt fa-3x mb-3 text-primary"
-                              ></i>
-                              <h5>Перетащите файл или нажмите для выбора</h5>
-                              <p class="text-muted small mb-0">
-                                PNG, JPG, SVG, GIF • Макс. 5MB
-                              </p>
-                            </div>
-                            <div
-                              id="imagePreview"
-                              class="preview-container d-none"
-                            >
-                              <img
-                                id="preview"
-                                src="#"
-                                alt="Предпросмотр изображения"
-                                class="img-fluid"
-                              />
-                              <div class="preview-overlay">
-                                <button
-                                  type="button"
-                                  class="btn btn-danger btn-sm"
-                                  id="removeImage"
-                                >
-                                  <i class="fas fa-trash"></i>
-                                </button>
-                              </div>
-                            </div>
-                            <input
-                              type="file"
-                              class="form-control d-none"
-                              id="image"
-                              name="image"
-                              accept="image/*"
-                              required
-                            />
-                          </label>
-                          <div class="invalid-feedback">
-                            Пожалуйста, загрузите изображение дизайна
+                  <div class="product-designer">
+                    <!-- T-shirt preview with tabs -->
+                    <div class="product-designer-tabs">
+                      <button class="product-designer-tab active" id="tab-front">Front</button>
+                      <button class="product-designer-tab" id="tab-back">Back</button>
+                    </div>
+
+                    <!-- Preview area -->
+                    <div class="product-designer-preview">
+                      <div class="tshirt-container">
+                        <img src="{% static 'img/tshirt-mockups/tshirt-black.png' %}" alt="T-shirt" class="tshirt-img" id="tshirt-preview">
+                        <div class="design-area" id="design-area">
+                          <div class="design-placeholder" id="design-placeholder">
+                            <p>Drag and drop<br>artwork here</p>
+                            <i class="fas fa-cloud-upload-alt"></i>
                           </div>
+                          <img src="" alt="Your design" class="design-image d-none" id="design-image">
+
+                          <!-- Resize handles -->
+                          <div class="resize-handle resize-handle-nw d-none" id="resize-nw"></div>
+                          <div class="resize-handle resize-handle-ne d-none" id="resize-ne"></div>
+                          <div class="resize-handle resize-handle-sw d-none" id="resize-sw"></div>
+                          <div class="resize-handle resize-handle-se d-none" id="resize-se"></div>
                         </div>
                       </div>
-                      <div class="col-lg-6">
-                        <h5 class="mb-3">Требования к изображению:</h5>
-                        <ul class="list-unstyled">
-                          <li class="mb-2">
-                            <i
-                              class="fas fa-check-circle text-success me-2"
-                            ></i>
-                            Разрешение: минимум 1200x1200 пикс.
-                          </li>
-                          <li class="mb-2">
-                            <i
-                              class="fas fa-check-circle text-success me-2"
-                            ></i>
-                            Формат: PNG или JPG (для прозрачного фона
-                            используйте PNG)
-                          </li>
-                          <li class="mb-2">
-                            <i
-                              class="fas fa-check-circle text-success me-2"
-                            ></i>
-                            Размер файла: до 5 МБ
-                          </li>
-                          <li class="mb-2">
-                            <i
-                              class="fas fa-check-circle text-success me-2"
-                            ></i>
-                            Четкое изображение без размытия и пикселизации
-                          </li>
-                          <li>
-                            <i
-                              class="fas fa-check-circle text-success me-2"
-                            ></i>
-                            Дизайн должен соответствовать правилам платформы
-                          </li>
-                        </ul>
-                      </div>
+                    </div>
+
+                    <!-- Color selector -->
+                    <div class="color-selector">
+                      <div class="color-option color-black selected" data-color="black" title="Black"></div>
+                      <div class="color-option color-white" data-color="white" title="White"></div>
+                      <div class="color-option color-red" data-color="red" title="Red"></div>
+                      <div class="color-option color-blue" data-color="blue" title="Blue"></div>
+                      <div class="color-option color-yellow" data-color="yellow" title="Yellow"></div>
+                      <div class="color-option color-green" data-color="green" title="Green"></div>
+                      <div class="color-option color-grey" data-color="grey" title="Grey"></div>
+                    </div>
+
+                    <!-- Design controls (visible when design is uploaded) -->
+                    <div class="design-controls d-none" id="design-controls">
+                      <button type="button" class="design-control-btn" id="reset-design">
+                        <i class="fas fa-undo me-1"></i> Reset
+                      </button>
+                      <button type="button" class="design-control-btn" id="center-design">
+                        <i class="fas fa-align-center me-1"></i> Center
+                      </button>
+                    </div>
+
+                    <!-- Size slider (visible when design is uploaded) -->
+                    <div class="mt-3 d-none" id="size-control">
+                      <label for="design-size" class="form-label">Design size</label>
+                      <input type="range" class="form-range design-size-slider" id="design-size" min="20" max="100" value="60">
                     </div>
                   </div>
+
+                  <!-- Hidden file input for design upload -->
+                  <div class="d-none">
+                    <input
+                      type="file"
+                      class="form-control"
+                      id="image"
+                      name="image"
+                      accept="image/*"
+                      required
+                    />
+                    <div class="invalid-feedback">
+                      Пожалуйста, загрузите изображение дизайна
+                    </div>
+                  </div>
+
+                  <!-- Requirements section -->
+                  <div class="mt-4">
+                    <h5 class="mb-3">Требования к изображению:</h5>
+                    <ul class="list-unstyled">
+                      <li class="mb-2">
+                        <i class="fas fa-check-circle text-success me-2"></i>
+                        Разрешение: минимум 1200x1200 пикс.
+                      </li>
+                      <li class="mb-2">
+                        <i class="fas fa-check-circle text-success me-2"></i>
+                        Формат: PNG или JPG (для прозрачного фона используйте PNG)
+                      </li>
+                      <li class="mb-2">
+                        <i class="fas fa-check-circle text-success me-2"></i>
+                        Размер файла: до 5 МБ
+                      </li>
+                      <li class="mb-2">
+                        <i class="fas fa-check-circle text-success me-2"></i>
+                        Четкое изображение без размытия и пикселизации
+                      </li>
+                      <li>
+                        <i class="fas fa-check-circle text-success me-2"></i>
+                        Дизайн должен соответствовать правилам платформы
+                      </li>
+                    </ul>
+                  </div>
                 </div>
+
+                <!-- Hidden fields for design position and size -->
+                <input type="hidden" name="design_position" id="design-position-input" value="">
 
                 <!-- Submit section -->
                 <div class="col-12 mt-4">
@@ -430,127 +456,402 @@
   document.addEventListener("DOMContentLoaded", function () {
     // Form validation
     const form = document.querySelector(".needs-validation");
+    const designPositionInput = document.getElementById("design-position-input");
+
     if (form) {
       form.addEventListener("submit", function (event) {
         if (!form.checkValidity()) {
           event.preventDefault();
           event.stopPropagation();
         }
+
+        // Save design position and size data
+        if (designArea && designPositionInput) {
+          const designData = {
+            left: designArea.style.left,
+            top: designArea.style.top,
+            width: designArea.style.width,
+            height: designArea.style.height,
+            color: currentColor,
+            view: currentView
+          };
+
+          designPositionInput.value = JSON.stringify(designData);
+        }
+
         form.classList.add("was-validated");
       });
     }
 
-    // Handle drag and drop file upload
-    const uploadBox = document.querySelector(".upload-box");
+    // File input
     const fileInput = document.getElementById("image");
-    const preview = document.getElementById("preview");
-    const imagePreview = document.getElementById("imagePreview");
-    const uploadPlaceholder = document.getElementById("upload-placeholder");
-    const removeButton = document.getElementById("removeImage");
 
-    if (
-      uploadBox &&
-      fileInput &&
-      preview &&
-      imagePreview &&
-      uploadPlaceholder &&
-      removeButton
-    ) {
-      // Highlight drop area on drag over
-      ["dragenter", "dragover"].forEach((eventName) => {
-        uploadBox.addEventListener(eventName, (e) => {
-          e.preventDefault();
-          uploadBox.classList.add("highlight");
-        });
-      });
+    // Product designer elements
+    const designArea = document.getElementById("design-area");
+    const designImage = document.getElementById("design-image");
+    const designPlaceholder = document.getElementById("design-placeholder");
+    const tshirtPreview = document.getElementById("tshirt-preview");
+    const colorOptions = document.querySelectorAll(".color-option");
+    const tabFront = document.getElementById("tab-front");
+    const tabBack = document.getElementById("tab-back");
+    const designControls = document.getElementById("design-controls");
+    const resetDesignBtn = document.getElementById("reset-design");
+    const centerDesignBtn = document.getElementById("center-design");
+    const sizeControl = document.getElementById("size-control");
+    const designSizeSlider = document.getElementById("design-size");
+    const resizeHandles = document.querySelectorAll(".resize-handle");
+    const uploadDesignBtn = document.getElementById("upload-design-btn");
 
-      ["dragleave", "drop"].forEach((eventName) => {
-        uploadBox.addEventListener(eventName, (e) => {
-          e.preventDefault();
-          uploadBox.classList.remove("highlight");
-        });
-      });
+    // T-shirt images for different colors
+    const tshirtImages = {
+      black: "{% static 'img/tshirt-mockups/tshirt-black.png' %}",
+      white: "{% static 'img/tshirt-mockups/tshirt-white.png' %}",
+      red: "{% static 'img/tshirt-mockups/tshirt-red.png' %}",
+      blue: "{% static 'img/tshirt-mockups/tshirt-blue.png' %}",
+      yellow: "{% static 'img/tshirt-mockups/tshirt-yellow.png' %}",
+      green: "{% static 'img/tshirt-mockups/tshirt-green.png' %}",
+      grey: "{% static 'img/tshirt-mockups/tshirt-grey.png' %}"
+    };
 
-      // Handle drop event
-      uploadBox.addEventListener("drop", (e) => {
-        e.preventDefault();
-        if (e.dataTransfer.files.length) {
-          fileInput.files = e.dataTransfer.files;
-          updatePreview(e.dataTransfer.files[0]);
+    // Current state
+    let currentView = "front";
+    let currentColor = "black";
+    let isDragging = false;
+    let isResizing = false;
+    let currentResizeHandle = null;
+    let startX, startY, startWidth, startHeight, startLeft, startTop;
+
+    // Initialize design area position and size (square)
+    let designAreaPosition = {
+      width: 200,
+      height: 200,
+      left: 0,
+      top: 0
+    };
+
+    // File upload handling
+    if (fileInput && designArea) {
+      // Handle file selection via input
+      fileInput.addEventListener("change", function (e) {
+        if (this.files && this.files[0]) {
+          updateDesignPreview(this.files[0]);
         }
       });
 
-      // Click to select file
-      uploadBox.addEventListener("click", () => {
+      // Make design area a drop zone
+      designArea.addEventListener("dragover", function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        this.style.borderColor = "#009688";
+        this.style.borderWidth = "3px";
+        document.querySelector('.design-placeholder').style.backgroundColor = 'rgba(255, 255, 255, 0.7)';
+      });
+
+      designArea.addEventListener("dragleave", function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        if (currentColor === 'black' || currentColor === 'blue' || currentColor === 'green') {
+          this.style.borderColor = "rgba(255, 255, 255, 0.7)";
+          this.style.borderWidth = "2px";
+          document.querySelector('.design-placeholder').style.backgroundColor = 'rgba(255, 255, 255, 0.3)';
+        } else {
+          this.style.borderColor = "rgba(0, 0, 0, 0.5)";
+          this.style.borderWidth = "2px";
+          document.querySelector('.design-placeholder').style.backgroundColor = 'rgba(255, 255, 255, 0.5)';
+        }
+      });
+
+      designArea.addEventListener("drop", function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        if (currentColor === 'black' || currentColor === 'blue' || currentColor === 'green') {
+          this.style.borderColor = "rgba(255, 255, 255, 0.7)";
+          this.style.borderWidth = "2px";
+        } else {
+          this.style.borderColor = "rgba(0, 0, 0, 0.5)";
+          this.style.borderWidth = "2px";
+        }
+
+        if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+          fileInput.files = e.dataTransfer.files;
+          updateDesignPreview(e.dataTransfer.files[0]);
+        }
+      });
+
+      // Make design placeholder clickable to trigger file input
+      designPlaceholder.addEventListener("click", function() {
         fileInput.click();
       });
 
-      // Handle file selection
-      fileInput.addEventListener("change", function (e) {
-        if (this.files && this.files[0]) {
-          updatePreview(this.files[0]);
-        }
-      });
-
-      // Remove image
-      removeButton.addEventListener("click", function (e) {
-        e.stopPropagation();
-        fileInput.value = "";
-        imagePreview.classList.add("d-none");
-        uploadPlaceholder.classList.remove("d-none");
-        if (form) form.classList.remove("was-validated");
-      });
-
-      // Update image preview
-      function updatePreview(file) {
+      // Update design preview
+      function updateDesignPreview(file) {
         const reader = new FileReader();
 
         reader.onload = function (e) {
-          preview.src = e.target.result;
-          imagePreview.classList.remove("d-none");
-          uploadPlaceholder.classList.add("d-none");
+          const imageData = e.target.result;
+
+          // Update design preview
+          designImage.src = imageData;
+          designImage.classList.remove("d-none");
+          designPlaceholder.classList.add("d-none");
+          designArea.classList.add("has-design");
+          designControls.classList.remove("d-none");
+          sizeControl.classList.remove("d-none");
+          resizeHandles.forEach(handle => handle.classList.remove("d-none"));
+
+          // Make design area square
+          const parentRect = designArea.parentElement.getBoundingClientRect();
+          const squareSize = Math.min(parentRect.width, parentRect.height) * 0.25;
+          designArea.style.width = squareSize + "px";
+          designArea.style.height = squareSize + "px";
+
+          // Center the design
+          centerDesign();
         };
 
         reader.readAsDataURL(file);
       }
     }
+
+    // Product designer functionality
+    if (designArea && tshirtPreview) {
+      // Tab switching
+      tabFront.addEventListener("click", function() {
+        currentView = "front";
+        tabFront.classList.add("active");
+        tabBack.classList.remove("active");
+      });
+
+      tabBack.addEventListener("click", function() {
+        currentView = "back";
+        tabBack.classList.add("active");
+        tabFront.classList.remove("active");
+      });
+
+      // Color selection
+      colorOptions.forEach(option => {
+        option.addEventListener("click", function() {
+          const color = this.getAttribute("data-color");
+          currentColor = color;
+
+          // Update selected color
+          colorOptions.forEach(opt => opt.classList.remove("selected"));
+          this.classList.add("selected");
+
+          // Update t-shirt image
+          if (tshirtImages[color]) {
+            tshirtPreview.src = tshirtImages[color];
+          }
+
+          // Update form checkbox
+          const checkbox = document.getElementById(`color-${color}`);
+          if (checkbox) {
+            checkbox.checked = true;
+          }
+
+          // Update design area border color for better visibility
+          if (color === 'black' || color === 'blue' || color === 'green') {
+            designArea.style.border = '2px dashed rgba(255, 255, 255, 0.7)';
+            if (!designArea.classList.contains('has-design')) {
+              document.querySelectorAll('.design-placeholder p, .design-placeholder i').forEach(el => {
+                el.style.color = 'rgba(255, 255, 255, 0.7)';
+              });
+              document.querySelector('.design-placeholder').style.backgroundColor = 'rgba(255, 255, 255, 0.3)';
+            }
+          } else {
+            designArea.style.border = '2px dashed rgba(0, 0, 0, 0.5)';
+            if (!designArea.classList.contains('has-design')) {
+              document.querySelectorAll('.design-placeholder p, .design-placeholder i').forEach(el => {
+                el.style.color = 'rgba(0, 0, 0, 0.7)';
+              });
+              document.querySelector('.design-placeholder').style.backgroundColor = 'rgba(255, 255, 255, 0.5)';
+            }
+          }
+        });
+      });
+
+      // Make design area draggable
+      designArea.addEventListener("mousedown", function(e) {
+        if (e.target === designImage || e.target === designArea) {
+          isDragging = true;
+          startX = e.clientX;
+          startY = e.clientY;
+          startLeft = designArea.offsetLeft;
+          startTop = designArea.offsetTop;
+          e.preventDefault();
+        }
+      });
+
+      // Resize functionality
+      resizeHandles.forEach(handle => {
+        handle.addEventListener("mousedown", function(e) {
+          isResizing = true;
+          currentResizeHandle = this.id;
+          startX = e.clientX;
+          startY = e.clientY;
+          startWidth = designArea.offsetWidth;
+          startHeight = designArea.offsetHeight;
+          startLeft = designArea.offsetLeft;
+          startTop = designArea.offsetTop;
+          e.preventDefault();
+          e.stopPropagation();
+        });
+      });
+
+      // Mouse move handler for drag and resize
+      document.addEventListener("mousemove", function(e) {
+        if (isDragging) {
+          const dx = e.clientX - startX;
+          const dy = e.clientY - startY;
+
+          const newLeft = startLeft + dx;
+          const newTop = startTop + dy;
+
+          // Keep within bounds
+          const parentRect = designArea.parentElement.getBoundingClientRect();
+          const designRect = designArea.getBoundingClientRect();
+
+          if (newLeft >= 0 && newLeft + designRect.width <= parentRect.width) {
+            designArea.style.left = newLeft + "px";
+          }
+
+          if (newTop >= 0 && newTop + designRect.height <= parentRect.height) {
+            designArea.style.top = newTop + "px";
+          }
+        } else if (isResizing) {
+          const dx = e.clientX - startX;
+          const dy = e.clientY - startY;
+
+          let newWidth = startWidth;
+          let newHeight = startHeight;
+          let newLeft = startLeft;
+          let newTop = startTop;
+
+          // Handle different resize handles and maintain square shape
+          switch (currentResizeHandle) {
+            case "resize-se":
+              // Use the larger of dx or dy to maintain square
+              const delta_se = Math.max(Math.abs(dx), Math.abs(dy)) * (dx > 0 ? 1 : -1);
+              newWidth = startWidth + delta_se;
+              newHeight = newWidth; // Keep square
+              break;
+            case "resize-sw":
+              const delta_sw = Math.max(Math.abs(dx), Math.abs(dy)) * (dx > 0 ? 1 : -1);
+              newWidth = startWidth - delta_sw;
+              newHeight = newWidth; // Keep square
+              newLeft = startLeft + delta_sw;
+              break;
+            case "resize-ne":
+              const delta_ne = Math.max(Math.abs(dx), Math.abs(dy)) * (dx > 0 ? 1 : -1);
+              newWidth = startWidth + delta_ne;
+              newHeight = newWidth; // Keep square
+              newTop = startTop + (startHeight - newHeight);
+              break;
+            case "resize-nw":
+              const delta_nw = Math.max(Math.abs(dx), Math.abs(dy)) * (dx > 0 ? 1 : -1);
+              newWidth = startWidth - delta_nw;
+              newHeight = newWidth; // Keep square
+              newLeft = startLeft + delta_nw;
+              newTop = startTop + (startHeight - newHeight);
+              break;
+          }
+
+          // Apply minimum size
+          const minSize = 50;
+          if (newWidth >= minSize && newHeight >= minSize) {
+            designArea.style.width = newWidth + "px";
+            designArea.style.height = newHeight + "px";
+            designArea.style.left = newLeft + "px";
+            designArea.style.top = newTop + "px";
+          }
+        }
+      });
+
+      // Mouse up handler to stop dragging/resizing
+      document.addEventListener("mouseup", function() {
+        isDragging = false;
+        isResizing = false;
+      });
+
+      // Size slider
+      designSizeSlider.addEventListener("input", function() {
+        const size = this.value;
+        const parentRect = designArea.parentElement.getBoundingClientRect();
+        const newSize = (parentRect.width * size) / 100;
+
+        // Make it square
+        const newWidth = newSize;
+        const newHeight = newSize;
+
+        // Position in the center of the t-shirt chest area
+        const newLeft = (parentRect.width - newWidth) / 2;
+        const newTop = (parentRect.height * 0.45 - newHeight / 2);
+
+        designArea.style.width = newWidth + "px";
+        designArea.style.height = newHeight + "px";
+        designArea.style.left = newLeft + "px";
+        designArea.style.top = newTop + "px";
+      });
+
+      // Reset design
+      resetDesignBtn.addEventListener("click", function() {
+        if (designImage.classList.contains("d-none")) {
+          // If no design is uploaded, just reset size
+          designSizeSlider.value = 60;
+          const event = new Event("input");
+          designSizeSlider.dispatchEvent(event);
+        } else {
+          // Clear the design
+          fileInput.value = "";
+          designImage.src = "";
+          designImage.classList.add("d-none");
+          designPlaceholder.classList.remove("d-none");
+          designArea.classList.remove("has-design");
+          designControls.classList.add("d-none");
+          sizeControl.classList.add("d-none");
+          resizeHandles.forEach(handle => handle.classList.add("d-none"));
+
+          // Reset size
+          designSizeSlider.value = 60;
+          const event = new Event("input");
+          designSizeSlider.dispatchEvent(event);
+        }
+      });
+
+      // Center design
+      centerDesignBtn.addEventListener("click", centerDesign);
+
+      function centerDesign() {
+        const parentRect = designArea.parentElement.getBoundingClientRect();
+        const designRect = designArea.getBoundingClientRect();
+
+        // Position in the center of the t-shirt chest area
+        const newLeft = (parentRect.width - designRect.width) / 2;
+        const newTop = (parentRect.height * 0.45 - designRect.height / 2);
+
+        designArea.style.left = newLeft + "px";
+        designArea.style.top = newTop + "px";
+      }
+
+      // Initialize design position
+      centerDesign();
+
+      // Set initial design area border for black t-shirt
+      designArea.style.border = '2px dashed rgba(255, 255, 255, 0.7)';
+      document.querySelectorAll('.design-placeholder p, .design-placeholder i').forEach(el => {
+        el.style.color = 'rgba(255, 255, 255, 0.7)';
+      });
+      document.querySelector('.design-placeholder').style.backgroundColor = 'rgba(255, 255, 255, 0.3)';
+
+      // Upload design button click handler
+      if (uploadDesignBtn) {
+        uploadDesignBtn.addEventListener("click", function() {
+          fileInput.click();
+        });
+      }
+    }
   });
 </script>
 
-<style>
-  .upload-box {
-    position: relative;
-    border: 2px dashed var(--bs-gray-600);
-    border-radius: 8px;
-    transition: all 0.3s ease;
-    cursor: pointer;
-  }
 
-  .upload-box:hover,
-  .upload-box.highlight {
-    border-color: var(--bs-primary);
-    background-color: rgba(var(--bs-primary-rgb), 0.05);
-  }
-
-  .upload-label {
-    display: block;
-    width: 100%;
-    height: 100%;
-    cursor: pointer;
-    margin-bottom: 0;
-  }
-
-  .preview-container {
-    position: relative;
-    border-radius: 8px;
-    overflow: hidden;
-  }
-
-  .preview-overlay {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    z-index: 2;
-  }
-</style>
 {% endblock %}

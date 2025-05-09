@@ -1,0 +1,224 @@
+/* Product Designer Styles */
+.product-designer {
+  margin-bottom: 2rem;
+}
+
+.product-designer-tabs {
+  display: flex;
+  margin-bottom: 0;
+}
+
+.product-designer-tab {
+  padding: 0.75rem 1.5rem;
+  cursor: pointer;
+  font-weight: 600;
+  text-align: center;
+  flex: 1;
+  background-color: #f0f0f0;
+  color: #333;
+  border: 1px solid #ddd;
+  border-bottom: none;
+  border-radius: 4px 4px 0 0;
+  transition: all 0.2s ease;
+  max-width: 120px;
+}
+
+.product-designer-tab.active {
+  background-color: #009688;
+  color: #fff;
+  border-color: #009688;
+}
+
+.product-designer-preview {
+  position: relative;
+  width: 100%;
+  height: 450px;
+  background-color: #f5f5f5;
+  border: 1px solid #ddd;
+  border-radius: 0;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tshirt-container {
+  position: relative;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tshirt-img {
+  height: 90%;
+  max-width: 100%;
+  object-fit: contain;
+  margin-top: 10px;
+}
+
+.design-area {
+  position: absolute;
+  top: 45%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 25%;
+  height: 25%;
+  border: 2px dashed rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  cursor: move;
+  background-color: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.design-area.has-design {
+  border: none;
+}
+
+.design-placeholder {
+  text-align: center;
+  color: rgba(0, 0, 0, 0.7);
+  padding: 1rem;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  line-height: 1.4;
+  background-color: rgba(255, 255, 255, 0.5);
+}
+
+.design-placeholder p {
+  margin-bottom: 10px;
+}
+
+.design-placeholder i {
+  font-size: 24px;
+  color: rgba(0, 0, 0, 0.7);
+}
+
+.design-image {
+  max-width: 100%;
+  max-height: 100%;
+  pointer-events: none;
+}
+
+.color-selector {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.color-option {
+  width: 30px;
+  height: 30px;
+  border-radius: 0;
+  cursor: pointer;
+  border: 1px solid #ddd;
+  transition: all 0.2s ease;
+}
+
+.color-option:hover {
+  transform: scale(1.1);
+}
+
+.color-option.selected {
+  border-color: #009688;
+  border-width: 2px;
+}
+
+.color-black {
+  background-color: #000;
+}
+
+.color-white {
+  background-color: #fff;
+  border: 1px solid #ddd;
+}
+
+.color-red {
+  background-color: #e74c3c;
+}
+
+.color-blue {
+  background-color: #3498db;
+}
+
+.color-yellow {
+  background-color: #f1c40f;
+}
+
+.color-green {
+  background-color: #2ecc71;
+}
+
+.color-grey {
+  background-color: #95a5a6;
+}
+
+.resize-handle {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background-color: #3498db;
+  border-radius: 50%;
+}
+
+.resize-handle-nw {
+  top: -5px;
+  left: -5px;
+  cursor: nw-resize;
+}
+
+.resize-handle-ne {
+  top: -5px;
+  right: -5px;
+  cursor: ne-resize;
+}
+
+.resize-handle-sw {
+  bottom: -5px;
+  left: -5px;
+  cursor: sw-resize;
+}
+
+.resize-handle-se {
+  bottom: -5px;
+  right: -5px;
+  cursor: se-resize;
+}
+
+.design-controls {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.design-control-btn {
+  background-color: #f8f9fa;
+  color: #333;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 14px;
+}
+
+.design-control-btn:hover {
+  background-color: #009688;
+  color: #fff;
+  border-color: #009688;
+}
+
+.design-size-slider {
+  width: 100%;
+  margin-top: 1rem;
+}
