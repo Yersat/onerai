@@ -20,6 +20,7 @@
               class="needs-validation"
               novalidate
             >
+              {% csrf_token %}
               <div class="row g-4">
                 <!-- Basic info -->
                 <div class="col-12">
@@ -92,113 +93,16 @@
                 </div>
 
                 <div class="col-md-6">
-                  <label class="form-label">Выберите доступные цвета</label>
-                  <div class="row g-2">
-                    <div class="col-4">
-                      <div class="form-check">
-                        <input
-                          class="form-check-input"
-                          type="checkbox"
-                          value="black"
-                          id="color-black"
-                          name="colors[]"
-                          checked
-                        />
-                        <label class="form-check-label" for="color-black">
-                          Черный
-                        </label>
-                      </div>
-                    </div>
-                    <div class="col-4">
-                      <div class="form-check">
-                        <input
-                          class="form-check-input"
-                          type="checkbox"
-                          value="white"
-                          id="color-white"
-                          name="colors[]"
-                          checked
-                        />
-                        <label class="form-check-label" for="color-white">
-                          Белый
-                        </label>
-                      </div>
-                    </div>
-                    <div class="col-4">
-                      <div class="form-check">
-                        <input
-                          class="form-check-input"
-                          type="checkbox"
-                          value="red"
-                          id="color-red"
-                          name="colors[]"
-                          checked
-                        />
-                        <label class="form-check-label" for="color-red">
-                          Красный
-                        </label>
-                      </div>
-                    </div>
-                    <div class="col-4">
-                      <div class="form-check">
-                        <input
-                          class="form-check-input"
-                          type="checkbox"
-                          value="blue"
-                          id="color-blue"
-                          name="colors[]"
-                          checked
-                        />
-                        <label class="form-check-label" for="color-blue">
-                          Синий
-                        </label>
-                      </div>
-                    </div>
-                    <div class="col-4">
-                      <div class="form-check">
-                        <input
-                          class="form-check-input"
-                          type="checkbox"
-                          value="yellow"
-                          id="color-yellow"
-                          name="colors[]"
-                          checked
-                        />
-                        <label class="form-check-label" for="color-yellow">
-                          Желтый
-                        </label>
-                      </div>
-                    </div>
-                    <div class="col-4">
-                      <div class="form-check">
-                        <input
-                          class="form-check-input"
-                          type="checkbox"
-                          value="green"
-                          id="color-green"
-                          name="colors[]"
-                          checked
-                        />
-                        <label class="form-check-label" for="color-green">
-                          Зеленый
-                        </label>
-                      </div>
-                    </div>
-                    <div class="col-4">
-                      <div class="form-check">
-                        <input
-                          class="form-check-input"
-                          type="checkbox"
-                          value="grey"
-                          id="color-grey"
-                          name="colors[]"
-                          checked
-                        />
-                        <label class="form-check-label" for="color-grey">
-                          Серый
-                        </label>
-                      </div>
-                    </div>
+                  <label for="tags" class="form-label">Ключевые слова</label>
+                  <input
+                    type="text"
+                    class="form-control form-control-lg"
+                    id="tags"
+                    name="tags"
+                    placeholder="Например: футболка, дизайн, природа"
+                  />
+                  <div class="form-text">
+                    Введите ключевые слова через запятую. Они помогут покупателям найти ваш товар.
                   </div>
                 </div>
 
@@ -256,29 +160,63 @@
                       </div>
                     </div>
 
-                    <!-- Color selector -->
-                    <div class="color-selector">
-                      <div class="color-option color-black selected" data-color="black" title="Black"></div>
-                      <div class="color-option color-white" data-color="white" title="White"></div>
-                      <div class="color-option color-red" data-color="red" title="Red"></div>
-                      <div class="color-option color-blue" data-color="blue" title="Blue"></div>
-                      <div class="color-option color-yellow" data-color="yellow" title="Yellow"></div>
-                      <div class="color-option color-green" data-color="green" title="Green"></div>
-                      <div class="color-option color-grey" data-color="grey" title="Grey"></div>
+                    <!-- Color selector section -->
+                    <div class="color-selector-section">
+                      <div class="color-selector-title">
+                        Выберите цвет для предпросмотра
+                        <i class="fas fa-info-circle" title="Выберите цвет для предпросмотра дизайна"></i>
+                      </div>
+                      <div class="color-selector">
+                        <div class="color-option color-black selected" data-color="black" title="Black"></div>
+                        <div class="color-option color-white" data-color="white" title="White"></div>
+                        <div class="color-option color-red" data-color="red" title="Red"></div>
+                        <div class="color-option color-blue" data-color="blue" title="Blue"></div>
+                        <div class="color-option color-yellow" data-color="yellow" title="Yellow"></div>
+                        <div class="color-option color-green" data-color="green" title="Green"></div>
+                        <div class="color-option color-grey" data-color="grey" title="Grey"></div>
+                      </div>
                     </div>
 
-                    <!-- Design controls (visible when design is uploaded) -->
-                    <div class="design-controls d-none" id="design-controls">
+                    <!-- Available colors selection -->
+                    <div class="color-selector-section">
+                      <div class="color-selector-title">
+                        Выберите доступные цвета для продажи
+                        <i class="fas fa-info-circle" title="Нажмите на цвета, которые вы хотите сделать доступными для продажи"></i>
+                      </div>
+                      <div class="color-selector-help">
+                        Нажмите на цвета, чтобы выбрать их для продажи. Некоторые дизайны могут не подходить для определенных цветов.
+                      </div>
+                      <div class="color-selector" id="available-colors">
+                        <div class="color-option color-black approved" data-color="black" title="Black"></div>
+                        <div class="color-option color-white approved" data-color="white" title="White"></div>
+                        <div class="color-option color-red" data-color="red" title="Red"></div>
+                        <div class="color-option color-blue" data-color="blue" title="Blue"></div>
+                        <div class="color-option color-yellow" data-color="yellow" title="Yellow"></div>
+                        <div class="color-option color-green" data-color="green" title="Green"></div>
+                        <div class="color-option color-grey" data-color="grey" title="Grey"></div>
+                      </div>
+                      <!-- Hidden input to store selected colors -->
+                      <input type="hidden" name="available_colors" id="available-colors-input" value="black,white">
+                    </div>
+
+                    <!-- Design controls (always visible) -->
+                    <div class="design-controls" id="design-controls">
                       <button type="button" class="design-control-btn" id="reset-design">
                         <i class="fas fa-undo me-1"></i> Reset
                       </button>
                       <button type="button" class="design-control-btn" id="center-design">
                         <i class="fas fa-align-center me-1"></i> Center
                       </button>
+                      <button type="button" class="design-control-btn" id="move-right">
+                        <i class="fas fa-arrow-right me-1"></i> Move Right
+                      </button>
+                      <button type="button" class="design-control-btn" id="move-left">
+                        <i class="fas fa-arrow-left me-1"></i> Move Left
+                      </button>
                     </div>
 
-                    <!-- Size slider (visible when design is uploaded) -->
-                    <div class="mt-3 d-none" id="size-control">
+                    <!-- Size slider (always visible) -->
+                    <div class="mt-3" id="size-control">
                       <label for="design-size" class="form-label">Design size</label>
                       <input type="range" class="form-range design-size-slider" id="design-size" min="20" max="100" value="60">
                     </div>
@@ -341,8 +279,7 @@
                       >Отмена</a
                     >
                     <button type="submit" class="btn btn-primary btn-lg">
-                      <i class="fas fa-cloud-upload-alt me-2"></i>Опубликовать
-                      дизайн
+                      <i class="fas fa-cloud-upload-alt me-2"></i>Отправить на проверку
                     </button>
                   </div>
                 </div>
@@ -479,6 +416,27 @@
           designPositionInput.value = JSON.stringify(designData);
         }
 
+        // Check if at least one color is selected for availability
+        const selectedColors = getSelectedAvailableColors();
+        if (selectedColors.length === 0) {
+          event.preventDefault();
+          event.stopPropagation();
+          alert('Пожалуйста, выберите хотя бы один цвет для продажи');
+          return;
+        }
+
+        // Format tags if needed (remove extra spaces, etc.)
+        const tagsInput = document.getElementById("tags");
+        if (tagsInput && tagsInput.value) {
+          // Split by comma, trim whitespace, and rejoin
+          const formattedTags = tagsInput.value
+            .split(',')
+            .map(tag => tag.trim())
+            .filter(tag => tag.length > 0)
+            .join(', ');
+          tagsInput.value = formattedTags;
+        }
+
         form.classList.add("was-validated");
       });
     }
@@ -491,7 +449,9 @@
     const designImage = document.getElementById("design-image");
     const designPlaceholder = document.getElementById("design-placeholder");
     const tshirtPreview = document.getElementById("tshirt-preview");
-    const colorOptions = document.querySelectorAll(".color-option");
+    const colorOptions = document.querySelectorAll(".color-selector:not(#available-colors) .color-option");
+    const availableColorOptions = document.querySelectorAll("#available-colors .color-option");
+    const availableColorsInput = document.getElementById("available-colors-input");
     const tabFront = document.getElementById("tab-front");
     const tabBack = document.getElementById("tab-back");
     const designControls = document.getElementById("design-controls");
@@ -595,18 +555,23 @@
           designImage.classList.remove("d-none");
           designPlaceholder.classList.add("d-none");
           designArea.classList.add("has-design");
-          designControls.classList.remove("d-none");
-          sizeControl.classList.remove("d-none");
+          // Controls are already visible
+          // designControls.classList.remove("d-none");
+          // sizeControl.classList.remove("d-none");
           resizeHandles.forEach(handle => handle.classList.remove("d-none"));
 
           // Make design area square
           const parentRect = designArea.parentElement.getBoundingClientRect();
-          const squareSize = Math.min(parentRect.width, parentRect.height) * 0.25;
+          // Use 30% of the container width for a better size
+          const squareSize = Math.min(parentRect.width, parentRect.height) * 0.3;
           designArea.style.width = squareSize + "px";
           designArea.style.height = squareSize + "px";
 
-          // Center the design
-          centerDesign();
+          // Remove any transform that might be interfering with positioning
+          designArea.style.transform = "none";
+
+          // Position the design using our positioning function
+          positionDesign();
         };
 
         reader.readAsDataURL(file);
@@ -628,7 +593,24 @@
         tabFront.classList.remove("active");
       });
 
-      // Color selection
+      // Function to get selected available colors
+      function getSelectedAvailableColors() {
+        const selectedColors = [];
+        availableColorOptions.forEach(option => {
+          if (option.classList.contains('approved')) {
+            selectedColors.push(option.getAttribute('data-color'));
+          }
+        });
+        return selectedColors;
+      }
+
+      // Function to update available colors input
+      function updateAvailableColorsInput() {
+        const selectedColors = getSelectedAvailableColors();
+        availableColorsInput.value = selectedColors.join(',');
+      }
+
+      // Preview color selection
       colorOptions.forEach(option => {
         option.addEventListener("click", function() {
           const color = this.getAttribute("data-color");
@@ -641,12 +623,6 @@
           // Update t-shirt image
           if (tshirtImages[color]) {
             tshirtPreview.src = tshirtImages[color];
-          }
-
-          // Update form checkbox
-          const checkbox = document.getElementById(`color-${color}`);
-          if (checkbox) {
-            checkbox.checked = true;
           }
 
           // Update design area border color for better visibility
@@ -669,6 +645,20 @@
           }
         });
       });
+
+      // Available colors selection
+      availableColorOptions.forEach(option => {
+        option.addEventListener("click", function() {
+          // Toggle approved class
+          this.classList.toggle("approved");
+
+          // Update hidden input with selected colors
+          updateAvailableColorsInput();
+        });
+      });
+
+      // Initialize available colors input
+      updateAvailableColorsInput();
 
       // Make design area draggable
       designArea.addEventListener("mousedown", function(e) {
@@ -783,21 +773,20 @@
         const newWidth = newSize;
         const newHeight = newSize;
 
-        // Position in the center of the t-shirt chest area
-        const newLeft = (parentRect.width - newWidth) / 2;
-        const newTop = (parentRect.height * 0.45 - newHeight / 2);
-
+        // Apply the new size
         designArea.style.width = newWidth + "px";
         designArea.style.height = newHeight + "px";
-        designArea.style.left = newLeft + "px";
-        designArea.style.top = newTop + "px";
+
+        // Use our positioning function to maintain the current horizontal position
+        positionDesign();
       });
 
       // Reset design
       resetDesignBtn.addEventListener("click", function() {
         if (designImage.classList.contains("d-none")) {
-          // If no design is uploaded, just reset size
+          // If no design is uploaded, just reset size and position
           designSizeSlider.value = 60;
+          currentHorizontalPosition = 0.5; // Reset to center
           const event = new Event("input");
           designSizeSlider.dispatchEvent(event);
         } else {
@@ -807,34 +796,86 @@
           designImage.classList.add("d-none");
           designPlaceholder.classList.remove("d-none");
           designArea.classList.remove("has-design");
-          designControls.classList.add("d-none");
-          sizeControl.classList.add("d-none");
+          // Don't hide controls anymore
+          // designControls.classList.add("d-none");
+          // sizeControl.classList.add("d-none");
           resizeHandles.forEach(handle => handle.classList.add("d-none"));
 
-          // Reset size
+          // Reset size and position
           designSizeSlider.value = 60;
+          currentHorizontalPosition = 0.5; // Reset to center
           const event = new Event("input");
           designSizeSlider.dispatchEvent(event);
         }
       });
 
+      // Get move buttons
+      const moveRightBtn = document.getElementById("move-right");
+      const moveLeftBtn = document.getElementById("move-left");
+
+      // Current horizontal position (0.5 is center)
+      let currentHorizontalPosition = 0.5;
+
       // Center design
       centerDesignBtn.addEventListener("click", centerDesign);
 
+      // Move right
+      if (moveRightBtn) {
+        moveRightBtn.addEventListener("click", function() {
+          // Increase horizontal position (move right)
+          currentHorizontalPosition += 0.05;
+          if (currentHorizontalPosition > 0.8) currentHorizontalPosition = 0.8; // Limit
+          positionDesign();
+        });
+      }
+
+      // Move left
+      if (moveLeftBtn) {
+        moveLeftBtn.addEventListener("click", function() {
+          // Decrease horizontal position (move left)
+          currentHorizontalPosition -= 0.05;
+          if (currentHorizontalPosition < 0.2) currentHorizontalPosition = 0.2; // Limit
+          positionDesign();
+        });
+      }
+
       function centerDesign() {
+        // Reset to center
+        currentHorizontalPosition = 0.5;
+        positionDesign();
+      }
+
+      function positionDesign() {
         const parentRect = designArea.parentElement.getBoundingClientRect();
         const designRect = designArea.getBoundingClientRect();
 
         // Position in the center of the t-shirt chest area
-        const newLeft = (parentRect.width - designRect.width) / 2;
-        const newTop = (parentRect.height * 0.45 - designRect.height / 2);
+        // Horizontally positioned based on currentHorizontalPosition
+        const newLeft = parentRect.width * currentHorizontalPosition - designRect.width / 2;
 
+        // Vertically positioned - adjust this value to move up/down
+        // Lower values move it higher on the shirt
+        const verticalPosition = 0.35; // 0.35 is higher on the chest than 0.4
+        const newTop = parentRect.height * verticalPosition - designRect.height / 2;
+
+        // Apply the new position
         designArea.style.left = newLeft + "px";
         designArea.style.top = newTop + "px";
+
+        console.log("Design area positioned at:", newLeft, newTop, "Horizontal position:", currentHorizontalPosition);
       }
 
-      // Initialize design position
-      centerDesign();
+      // Initialize design position and remove any transform that might be interfering
+      designArea.style.transform = "none";
+
+      // Set initial size (square)
+      const parentRect = designArea.parentElement.getBoundingClientRect();
+      const initialSize = Math.min(parentRect.width, parentRect.height) * 0.3;
+      designArea.style.width = initialSize + "px";
+      designArea.style.height = initialSize + "px";
+
+      // Position the design using our positioning function
+      positionDesign();
 
       // Set initial design area border for black t-shirt
       designArea.style.border = '2px dashed rgba(255, 255, 255, 0.7)';

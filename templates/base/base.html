@@ -25,6 +25,7 @@
     <!-- Custom styles -->
     <link rel="stylesheet" href="{% static 'css/styles.css' %}" />
     <link rel="stylesheet" href="{% static 'css/forms.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/product-designer.css' %}" />
     {% block head %}{% endblock %}
     <script>
       document.addEventListener("DOMContentLoaded", function () {
@@ -146,6 +147,13 @@
               >
               {% endif %}
             </li>
+            {% if user.is_authenticated and user.is_creator %}
+            <li class="nav-item">
+              <a class="nav-link px-3" href="{% url 'store:my_designs' %}"
+                >Мои дизайны</a
+              >
+            </li>
+            {% endif %}
           </ul>
           <div class="d-flex align-items-center">
             <form class="d-flex me-3">

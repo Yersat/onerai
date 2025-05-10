@@ -1,0 +1,145 @@
+{% extends 'base/base.html' %} {% load static %} {% load store_tags %} {% block title %}{{ product.name }}{% endblock %} {% block content %}
+<!-- Product detail header -->
+<section class="py-4 bg-dark">
+  <div class="container">
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb mb-0">
+        <li class="breadcrumb-item"><a href="{% url 'store:index' %}">Главная</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'store:products' %}">Товары</a></li>
+        <li class="breadcrumb-item active" aria-current="page">{{ product.name }}</li>
+      </ol>
+    </nav>
+  </div>
+</section>
+
+<!-- Product detail -->
+<section class="py-5">
+  <div class="container">
+    <div class="row g-5">
+      <!-- Product image -->
+      <div class="col-lg-6">
+        <div class="product-image-container">
+          <img src="{{ product.image.url }}" alt="{{ product.name }}" class="img-fluid rounded">
+        </div>
+      </div>
+
+      <!-- Product info -->
+      <div class="col-lg-6">
+        <h1 class="h2 fw-bold mb-3">{{ product.name }}</h1>
+
+        <div class="d-flex align-items-center mb-4">
+          <div class="me-3">
+            <span class="h3 fw-bold text-primary mb-0">{{ product.price }} ₸</span>
+          </div>
+          <div class="badge bg-success">В наличии</div>
+        </div>
+
+        <div class="mb-4">
+          <h5 class="mb-3">Описание</h5>
+          <p>{{ product.description }}</p>
+        </div>
+
+        {% if product.tags %}
+        <div class="mb-4">
+          <h5 class="mb-3">Ключевые слова</h5>
+          <div class="d-flex flex-wrap gap-2">
+            {% for tag in product.tags|split_tags %}
+            <span class="badge bg-light text-dark">#{{ tag }}</span>
+            {% endfor %}
+          </div>
+        </div>
+        {% endif %}
+
+        <div class="mb-4">
+          <h5 class="mb-3">Доступные цвета</h5>
+          <div class="d-flex flex-wrap gap-2">
+            {% for color in product.available_colors|split_tags %}
+              {% if color == "black" %}
+                <div class="color-option color-black {% if forloop.first %}selected{% endif %}" data-color="black" title="Black"></div>
+              {% elif color == "white" %}
+                <div class="color-option color-white {% if forloop.first %}selected{% endif %}" data-color="white" title="White"></div>
+              {% elif color == "red" %}
+                <div class="color-option color-red {% if forloop.first %}selected{% endif %}" data-color="red" title="Red"></div>
+              {% elif color == "blue" %}
+                <div class="color-option color-blue {% if forloop.first %}selected{% endif %}" data-color="blue" title="Blue"></div>
+              {% elif color == "yellow" %}
+                <div class="color-option color-yellow {% if forloop.first %}selected{% endif %}" data-color="yellow" title="Yellow"></div>
+              {% elif color == "green" %}
+                <div class="color-option color-green {% if forloop.first %}selected{% endif %}" data-color="green" title="Green"></div>
+              {% elif color == "grey" %}
+                <div class="color-option color-grey {% if forloop.first %}selected{% endif %}" data-color="grey" title="Grey"></div>
+              {% endif %}
+            {% endfor %}
+          </div>
+        </div>
+
+        <div class="mb-4">
+          <h5 class="mb-3">Размер</h5>
+          <div class="d-flex flex-wrap gap-2">
+            <button class="btn btn-outline-primary">S</button>
+            <button class="btn btn-outline-primary">M</button>
+            <button class="btn btn-outline-primary">L</button>
+            <button class="btn btn-outline-primary">XL</button>
+            <button class="btn btn-outline-primary">XXL</button>
+          </div>
+        </div>
+
+        <div class="d-flex flex-wrap gap-3 mb-4">
+          <button class="btn btn-primary btn-lg">
+            <i class="fas fa-shopping-cart me-2"></i>В корзину
+          </button>
+          <button class="btn btn-outline-primary btn-lg">
+            <i class="fas fa-heart me-2"></i>В избранное
+          </button>
+        </div>
+
+        <div class="d-flex align-items-center">
+          <img src="{% if product.creator.profile_image %}{{ product.creator.profile_image.url }}{% else %}{% static 'img/default-avatar.png' %}{% endif %}" alt="{{ product.creator.username }}" class="rounded-circle me-2" width="40" height="40">
+          <div>
+            <p class="mb-0">Дизайн от <a href="{% url 'store:creator_profile' product.creator.username %}" class="fw-bold">{{ product.creator.username }}</a></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Related products -->
+<section class="py-5 bg-light">
+  <div class="container">
+    <h2 class="h3 fw-bold mb-4">Похожие товары</h2>
+    <div class="row g-4">
+      <!-- This would be populated with actual related products -->
+      <div class="col-6 col-md-4 col-lg-3">
+        <div class="card h-100">
+          <div class="card-img-top-container">
+            <img src="{% static 'img/placeholder.png' %}" class="card-img-top" alt="Product">
+          </div>
+          <div class="card-body">
+            <h5 class="card-title">Название товара</h5>
+            <p class="price mb-3">5990 ₸</p>
+            <a href="#" class="btn btn-outline-primary w-100">Подробнее</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    // Color selection
+    const colorOptions = document.querySelectorAll(".color-option");
+
+    colorOptions.forEach(option => {
+      option.addEventListener("click", function() {
+        // Update selected color
+        colorOptions.forEach(opt => opt.classList.remove("selected"));
+        this.classList.add("selected");
+      });
+    });
+  });
+</script>
+{% endblock %}
