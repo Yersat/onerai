@@ -1,0 +1,228 @@
+{% extends 'base/base.html' %}
+{% load static %}
+{% block title %}Корзина{% endblock %}
+{% block content %}
+<!-- Cart header -->
+<section class="py-4 bg-dark">
+  <div class="container">
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb mb-0">
+        <li class="breadcrumb-item"><a href="{% url 'store:index' %}">Главная</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Корзина</li>
+      </ol>
+    </nav>
+  </div>
+</section>
+
+<!-- Cart content -->
+<section class="py-5">
+  <div class="container">
+    <div class="row mb-4">
+      <div class="col-12">
+        <h1 class="h2 mb-4">Корзина</h1>
+      </div>
+    </div>
+
+    {% if cart_items %}
+    <div class="row">
+      <div class="col-lg-8">
+        <!-- Cart items -->
+        <div class="card mb-4">
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-hover align-middle">
+                <thead>
+                  <tr>
+                    <th scope="col" width="50%">Товар</th>
+                    <th scope="col" class="text-center">Размер</th>
+                    <th scope="col" class="text-center">Цвет</th>
+                    <th scope="col" class="text-center">Цена</th>
+                    <th scope="col" class="text-center">Действия</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for item in cart_items %}
+                  <tr>
+                    <td>
+                      <div class="d-flex align-items-center">
+                        <div class="cart-item-img me-3">
+                          {% if item.color %}
+                          <img src="{% static 'img/tshirt-mockups/tshirt-' %}{{ item.color }}.png" alt="{{ item.product.name }}" class="img-fluid tshirt-preview">
+                          <div class="design-overlay">
+                            <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="design-image">
+                          </div>
+                          {% elif item.product.rendered_image %}
+                          <img src="{{ item.product.rendered_image.url }}" alt="{{ item.product.name }}" class="img-fluid">
+                          {% else %}
+                          <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="img-fluid">
+                          {% endif %}
+                        </div>
+                        <div>
+                          <h6 class="mb-1">{{ item.product.name }}</h6>
+                          <small class="text-muted">{{ item.product.category.name }}</small>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="text-center">{{ item.size }}</td>
+                    <td class="text-center">
+                      <span class="color-swatch" style="background-color: {{ item.color }};"></span>
+                      <div class="color-name mt-1">
+                        {% if item.color == "black" %}Черный
+                        {% elif item.color == "white" %}Белый
+                        {% elif item.color == "red" %}Красный
+                        {% elif item.color == "blue" %}Синий
+                        {% elif item.color == "yellow" %}Желтый
+                        {% elif item.color == "green" %}Зеленый
+                        {% elif item.color == "grey" %}Серый
+                        {% else %}{{ item.color }}
+                        {% endif %}
+                      </div>
+                    </td>
+                    <td class="text-center">{{ item.product.price }} ₸</td>
+                    <td class="text-center">
+                      <a href="#" class="btn btn-sm btn-outline-danger">
+                        <i class="fas fa-trash-alt"></i>
+                      </a>
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-4">
+        <!-- Order summary -->
+        <div class="card">
+          <div class="card-header bg-dark text-white">
+            <h5 class="mb-0">Итого</h5>
+          </div>
+          <div class="card-body">
+            <div class="d-flex justify-content-between mb-3">
+              <span>Товары ({{ cart_items|length }})</span>
+              <span>{{ total_price }} ₸</span>
+            </div>
+            <div class="d-flex justify-content-between mb-3">
+              <span>Доставка</span>
+              <span>Бесплатно</span>
+            </div>
+            <hr>
+            <div class="d-flex justify-content-between mb-4">
+              <strong>Итого к оплате</strong>
+              <strong>{{ total_price }} ₸</strong>
+            </div>
+            <a href="#" class="btn btn-primary w-100">Оформить заказ</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% else %}
+    <div class="row">
+      <div class="col-12">
+        <div class="alert alert-info">
+          <div class="d-flex align-items-center">
+            <i class="fas fa-shopping-cart fa-2x me-3"></i>
+            <div>
+              <h5 class="mb-1">Ваша корзина пуста</h5>
+              <p class="mb-0">Добавьте товары в корзину, чтобы продолжить покупки.</p>
+            </div>
+          </div>
+        </div>
+        <div class="text-center mt-4">
+          <a href="{% url 'store:products' %}" class="btn btn-primary">Перейти в магазин</a>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    // Apply appropriate filter to design images based on t-shirt color
+    const designImages = document.querySelectorAll('.design-image');
+
+    designImages.forEach(img => {
+      const tshirtPreview = img.closest('.cart-item-img').querySelector('.tshirt-preview');
+      if (tshirtPreview) {
+        const tshirtSrc = tshirtPreview.getAttribute('src');
+        const color = tshirtSrc.split('tshirt-')[1].split('.')[0];
+
+        // Apply filter based on t-shirt color
+        if (color === 'black' || color === 'blue' || color === 'green') {
+          // For dark t-shirts, add a subtle brightness to the design
+          img.style.filter = 'brightness(1.2) drop-shadow(0 0 3px rgba(255, 255, 255, 0.3))';
+        } else {
+          // For light t-shirts, keep normal brightness
+          img.style.filter = 'drop-shadow(0 0 2px rgba(0, 0, 0, 0.2))';
+        }
+      }
+    });
+  });
+</script>
+{% endblock %}
+
+{% block styles %}
+<style>
+  .cart-item-img {
+    width: 100px;
+    height: 100px;
+    overflow: hidden;
+    border-radius: 4px;
+    position: relative;
+  }
+
+  .cart-item-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  .cart-item-img .tshirt-preview {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+  }
+
+  .design-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+  }
+
+  .design-overlay .design-image {
+    max-width: 50%;
+    max-height: 50%;
+    object-fit: contain;
+    position: absolute;
+    top: 30%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  .color-swatch {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 1px solid #ddd;
+  }
+
+  .color-name {
+    font-size: 0.8rem;
+    color: #6c757d;
+  }
+</style>
+{% endblock %}
