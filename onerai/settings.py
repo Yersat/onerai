@@ -137,3 +137,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 LOGIN_URL = "creators:login"
 LOGIN_REDIRECT_URL = "store:index"
 LOGOUT_REDIRECT_URL = "store:index"
+
+# File upload settings
+DATA_UPLOAD_MAX_MEMORY_SIZE = 10485760  # 10MB
+FILE_UPLOAD_MAX_MEMORY_SIZE = 10485760  # 10MB

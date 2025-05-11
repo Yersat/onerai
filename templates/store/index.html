@@ -168,9 +168,15 @@
       <div class="col-6 col-md-4 col-lg-3">
         <div class="product-card card h-100">
           <div class="card-img-top-container">
-            {% if product.image_path %}
+            {% if product.rendered_image %}
             <img
-              src="{% static product.image_path %}"
+              src="{{ product.rendered_image.url }}"
+              class="card-img-top"
+              alt="{{ product.name }}"
+            />
+            {% elif product.image %}
+            <img
+              src="{{ product.image.url }}"
               class="card-img-top"
               alt="{{ product.name }}"
             />

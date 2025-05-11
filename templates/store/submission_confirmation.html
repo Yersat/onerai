@@ -1,0 +1,72 @@
+{% extends 'base/base.html' %} {% load static %} {% block title %}Дизайн отправлен на проверку{% endblock %} {% block content %}
+<!-- Submission confirmation header -->
+<section class="py-4 bg-dark">
+  <div class="container">
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb mb-0">
+        <li class="breadcrumb-item"><a href="{% url 'store:index' %}">Главная</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'store:my_designs' %}">Мои дизайны</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Дизайн отправлен</li>
+      </ol>
+    </nav>
+  </div>
+</section>
+
+<!-- Submission confirmation content -->
+<section class="py-5">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        <div class="card border-0 shadow-sm">
+          <div class="card-body p-5 text-center">
+            <div class="mb-4">
+              <i class="fas fa-check-circle text-success fa-5x"></i>
+            </div>
+            <h1 class="h2 fw-bold mb-3">Ваш дизайн отправлен на проверку!</h1>
+            <p class="lead mb-4">
+              Спасибо за ваш дизайн! Наша команда рассмотрит его в ближайшее время.
+            </p>
+
+            {% if product %}
+            <div class="card mb-4">
+              <div class="row g-0">
+                <div class="col-md-4">
+                  {% if product.rendered_image %}
+                    <img src="{{ product.rendered_image.url }}" class="img-fluid rounded-start" alt="{{ product.name }}">
+                  {% else %}
+                    <img src="{{ product.image.url }}" class="img-fluid rounded-start" alt="{{ product.name }}">
+                  {% endif %}
+                </div>
+                <div class="col-md-8">
+                  <div class="card-body">
+                    <h5 class="card-title">{{ product.name }}</h5>
+                    <p class="card-text">{{ product.price }} ₸</p>
+                    <p class="card-text"><small class="text-muted">Отправлен: {{ product.created_at|date:"d.m.Y H:i" }}</small></p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {% endif %}
+
+            <div class="alert alert-info mb-4">
+              <h5 class="alert-heading">Что дальше?</h5>
+              <p>Ваш дизайн будет проверен администратором. Это обычно занимает 1-2 рабочих дня.</p>
+              <hr>
+              <p class="mb-0">Вы получите уведомление, когда ваш дизайн будет одобрен или если потребуются изменения.</p>
+            </div>
+
+            <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center">
+              <a href="{% url 'store:my_designs' %}" class="btn btn-primary btn-lg">
+                <i class="fas fa-images me-2"></i>Мои дизайны
+              </a>
+              <a href="{% url 'store:add_product' %}" class="btn btn-outline-primary btn-lg">
+                <i class="fas fa-plus me-2"></i>Создать еще дизайн
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,156 @@
+{% extends 'base/base.html' %} {% load static %} {% block title %}Магазин | Все товары{% endblock %} {% block content %}
+<!-- Products header -->
+<section class="py-4 bg-dark">
+  <div class="container">
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb mb-0">
+        <li class="breadcrumb-item"><a href="{% url 'store:index' %}">Главная</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Магазин</li>
+      </ol>
+    </nav>
+  </div>
+</section>
+
+<!-- Products content -->
+<section class="py-5">
+  <div class="container">
+    <div class="row mb-4">
+      <div class="col-12">
+        <h1 class="h2 mb-4">Все товары</h1>
+
+        <!-- Category filters -->
+        <div class="d-flex flex-wrap gap-2 mb-4">
+          <a href="{% url 'store:products' %}" class="btn btn-sm {% if not request.GET.category %}btn-primary{% else %}btn-outline-primary{% endif %}">
+            Все категории
+          </a>
+          {% for category in categories %}
+          <a href="{% url 'store:products' %}?category={{ category.name }}" class="btn btn-sm {% if request.GET.category == category.name %}btn-primary{% else %}btn-outline-primary{% endif %}">
+            {{ category.name }}
+          </a>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    {% if products %}
+    <div class="row g-4">
+      {% for product in products %}
+      <div class="col-6 col-md-4 col-lg-3">
+        <div class="product-card card h-100">
+          <div class="card-img-top-container">
+            {% if product.rendered_image %}
+              <img src="{{ product.rendered_image.url }}" class="card-img-top" alt="{{ product.name }}">
+            {% else %}
+              <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}">
+            {% endif %}
+            <span class="badge bg-primary category-badge">{{ product.category.name }}</span>
+            <div class="quick-actions">
+              <a href="#" class="action-btn" data-bs-toggle="tooltip" title="В избранное">
+                <i class="fas fa-heart"></i>
+              </a>
+              <a href="#" class="action-btn" data-bs-toggle="tooltip" title="Быстрый просмотр">
+                <i class="fas fa-eye"></i>
+              </a>
+              <a href="#" class="action-btn" data-bs-toggle="tooltip" title="В корзину">
+                <i class="fas fa-shopping-cart"></i>
+              </a>
+            </div>
+          </div>
+          <div class="card-body">
+            <h5 class="card-title">{{ product.name }}</h5>
+            <p class="price mb-3">{{ product.price }} ₸</p>
+            <a href="{% url 'store:product_detail' product.id %}" class="btn btn-outline-primary w-100">Подробнее</a>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <!-- Pagination if needed -->
+    {% if products.has_other_pages %}
+    <nav aria-label="Page navigation" class="mt-5">
+      <ul class="pagination justify-content-center">
+        {% if products.has_previous %}
+        <li class="page-item">
+          <a class="page-link" href="?page={{ products.previous_page_number }}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}" aria-label="Previous">
+            <span aria-hidden="true">&laquo;</span>
+          </a>
+        </li>
+        {% else %}
+        <li class="page-item disabled">
+          <a class="page-link" href="#" aria-label="Previous">
+            <span aria-hidden="true">&laquo;</span>
+          </a>
+        </li>
+        {% endif %}
+
+        {% for i in products.paginator.page_range %}
+          {% if products.number == i %}
+          <li class="page-item active"><a class="page-link" href="#">{{ i }}</a></li>
+          {% else %}
+          <li class="page-item"><a class="page-link" href="?page={{ i }}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}">{{ i }}</a></li>
+          {% endif %}
+        {% endfor %}
+
+        {% if products.has_next %}
+        <li class="page-item">
+          <a class="page-link" href="?page={{ products.next_page_number }}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}" aria-label="Next">
+            <span aria-hidden="true">&raquo;</span>
+          </a>
+        </li>
+        {% else %}
+        <li class="page-item disabled">
+          <a class="page-link" href="#" aria-label="Next">
+            <span aria-hidden="true">&raquo;</span>
+          </a>
+        </li>
+        {% endif %}
+      </ul>
+    </nav>
+    {% endif %}
+
+    {% else %}
+    <div class="alert alert-info">
+      <div class="d-flex align-items-center">
+        <i class="fas fa-info-circle fa-2x me-3"></i>
+        <div>
+          <p class="mb-0">
+            Пока нет доступных товаров в этой категории. Станьте первым, кто добавит свой уникальный дизайн!
+          </p>
+          <a href="{% url 'store:add_product' %}" class="btn btn-primary mt-3">Добавить товар</a>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</section>
+
+<!-- CTA section -->
+<section class="py-5 bg-primary text-white">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-lg-8 text-center text-lg-start">
+        <h2 class="fw-bold mb-3">Готовы создать свой дизайн?</h2>
+        <p class="lead mb-lg-0">
+          Присоединяйтесь к сотням дизайнеров, которые уже зарабатывают с нашей платформой.
+        </p>
+      </div>
+      <div class="col-lg-4 text-center text-lg-end mt-4 mt-lg-0">
+        <a href="{% url 'store:add_product' %}" class="btn btn-light btn-lg">Загрузить дизайн сейчас</a>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  // Initialize tooltips for product quick action buttons
+  window.addEventListener("load", function () {
+    var quickActionButtons = document.querySelectorAll(".action-btn");
+    quickActionButtons.forEach(function (button) {
+      new bootstrap.Tooltip(button);
+    });
+  });
+</script>
+{% endblock %}

@@ -1,10 +1,13 @@
 import os
+import base64
+import uuid
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.core.exceptions import PermissionDenied
 from django.utils.text import slugify
+from django.core.files.base import ContentFile
 from .models import Product, Category
 
 User = get_user_model()
@@ -38,11 +41,31 @@ def index(request):
 
 
 def product_list(request):
-    products = Product.objects.filter(
+    # Get category filter from query parameters
+    category_name = request.GET.get('category')
+
+    # Base query for approved and active products
+    products_query = Product.objects.filter(
         is_active=True,
         approval_status=Product.STATUS_APPROVED
     )
-    return render(request, "store/product_list.html", {"products": products})
+
+    # Apply category filter if provided
+    if category_name:
+        products_query = products_query.filter(category__name=category_name)
+
+    # Get all categories for the filter buttons
+    categories = Category.objects.all()
+
+    # Get the products
+    products = products_query.order_by('-created_at')
+
+    context = {
+        "products": products,
+        "categories": categories
+    }
+
+    return render(request, "store/product_list.html", context)
 
 
 def product_detail(request, product_id):
@@ -129,6 +152,13 @@ def my_designs(request):
 
 
 @login_required
+def submission_confirmation(request, product_id):
+    """View for showing confirmation after design submission"""
+    product = get_object_or_404(Product, id=product_id, creator=request.user)
+    return render(request, "store/submission_confirmation.html", {"product": product})
+
+
+@login_required
 def add_product(request):
     # Since we're using the Creator model as our user model,
     # all authenticated users are creators
@@ -142,6 +172,7 @@ def add_product(request):
         available_colors = request.POST.get('available_colors', 'black,white')  # Get available colors
         image = request.FILES.get('image')
         design_position = request.POST.get('design_position')
+        rendered_image_data = request.POST.get('rendered_image_data')
 
         # Basic validation
         if not all([name, description, price, category_name, image]):
@@ -163,21 +194,33 @@ def add_product(request):
                 image=image,
                 tags=tags,  # Save tags
                 available_colors=available_colors,  # Save available colors
+                design_position=design_position,  # Save design position data
                 creator=request.user,
                 category=category,
                 approval_status=Product.STATUS_PENDING  # Set as pending approval
             )
+
+            # Process the rendered image if available
+            if rendered_image_data and rendered_image_data.startswith('data:image'):
+                # Extract the base64 encoded image data
+                format, imgstr = rendered_image_data.split(';base64,')
+                ext = format.split('/')[-1]
+
+                # Generate a unique filename
+                filename = f"rendered_{uuid.uuid4().hex}.{ext}"
+
+                # Convert base64 to file and save
+                rendered_image = ContentFile(base64.b64decode(imgstr), name=filename)
+                product.rendered_image = rendered_image
+                product.save()
 
             # Update user's designs count
             request.user.designs_count += 1
             request.user.is_creator = True
             request.user.save()
 
-            messages.success(
-                request,
-                'Ваш дизайн успешно отправлен на проверку! После одобрения администратором он будет опубликован.'
-            )
-            return redirect('store:product_detail', product_id=product.id)
+            # Success message is now shown on the confirmation page
+            return redirect('store:submission_confirmation', product_id=product.id)
 
         except Exception as e:
             messages.error(request, f'Произошла ошибка: {str(e)}')

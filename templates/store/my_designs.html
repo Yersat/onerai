@@ -17,7 +17,7 @@
     <div class="row mb-4">
       <div class="col-12">
         <h1 class="h2 mb-4">Мои дизайны</h1>
-        
+
         <!-- Status counts -->
         <div class="row g-3 mb-4">
           <div class="col-md-4">
@@ -45,7 +45,7 @@
             </div>
           </div>
         </div>
-        
+
         <div class="d-flex justify-content-between align-items-center mb-4">
           <p class="mb-0">Всего дизайнов: <strong>{{ products|length }}</strong></p>
           <a href="{% url 'store:add_product' %}" class="btn btn-primary">
@@ -61,8 +61,12 @@
       <div class="col-md-6 col-lg-4">
         <div class="card h-100 {% if product.approval_status == 'pending' %}border-warning{% elif product.approval_status == 'rejected' %}border-danger{% endif %}">
           <div class="card-img-top-container">
-            <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}">
-            
+            {% if product.rendered_image %}
+              <img src="{{ product.rendered_image.url }}" class="card-img-top" alt="{{ product.name }}">
+            {% else %}
+              <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}">
+            {% endif %}
+
             <!-- Status badge -->
             {% if product.approval_status == 'pending' %}
             <span class="badge bg-warning position-absolute top-0 end-0 m-2">На проверке</span>
@@ -72,23 +76,23 @@
             <span class="badge bg-success position-absolute top-0 end-0 m-2">Одобрен</span>
             {% endif %}
           </div>
-          
+
           <div class="card-body">
             <h5 class="card-title">{{ product.name }}</h5>
             <p class="price mb-2">{{ product.price }} ₸</p>
-            
+
             <!-- Show rejection reason if rejected -->
             {% if product.approval_status == 'rejected' and product.admin_feedback %}
             <div class="alert alert-danger mb-3">
               <small><strong>Причина отклонения:</strong> {{ product.admin_feedback }}</small>
             </div>
             {% endif %}
-            
+
             <div class="d-flex justify-content-between">
               <a href="{% url 'store:product_detail' product.id %}" class="btn btn-outline-primary">
                 <i class="fas fa-eye me-1"></i>Просмотр
               </a>
-              
+
               {% if product.approval_status == 'rejected' %}
               <a href="{% url 'store:add_product' %}" class="btn btn-primary">
                 <i class="fas fa-edit me-1"></i>Исправить
@@ -96,7 +100,7 @@
               {% endif %}
             </div>
           </div>
-          
+
           <div class="card-footer bg-transparent">
             <small class="text-muted">Создан: {{ product.created_at|date:"d.m.Y" }}</small>
           </div>

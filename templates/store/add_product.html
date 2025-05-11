@@ -268,6 +268,12 @@
                 <!-- Hidden fields for design position and size -->
                 <input type="hidden" name="design_position" id="design-position-input" value="">
 
+                <!-- Hidden canvas for rendering the final image -->
+                <div class="d-none">
+                  <canvas id="rendered-tshirt-canvas" width="1200" height="1200"></canvas>
+                  <input type="hidden" name="rendered_image_data" id="rendered-image-data">
+                </div>
+
                 <!-- Submit section -->
                 <div class="col-12 mt-4">
                   <div
@@ -278,7 +284,7 @@
                       class="btn btn-outline-secondary btn-lg"
                       >Отмена</a
                     >
-                    <button type="submit" class="btn btn-primary btn-lg">
+                    <button type="submit" class="btn btn-primary btn-lg" id="submit-button">
                       <i class="fas fa-cloud-upload-alt me-2"></i>Отправить на проверку
                     </button>
                   </div>
@@ -395,11 +401,82 @@
     const form = document.querySelector(".needs-validation");
     const designPositionInput = document.getElementById("design-position-input");
 
+    // Function to render the t-shirt with design as a composite image
+    function renderTshirtWithDesign() {
+      return new Promise((resolve, reject) => {
+        try {
+          const canvas = document.getElementById('rendered-tshirt-canvas');
+          const ctx = canvas.getContext('2d');
+
+          // Clear canvas
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+          // Create a new image for the t-shirt
+          const tshirtImg = new Image();
+          tshirtImg.crossOrigin = "Anonymous";
+          tshirtImg.src = tshirtPreview.src;
+
+          tshirtImg.onload = function() {
+            // Draw the t-shirt on the canvas
+            ctx.drawImage(tshirtImg, 0, 0, canvas.width, canvas.height);
+
+            // If there's a design, draw it on top of the t-shirt
+            if (!designImage.classList.contains('d-none') && designImage.src) {
+              const designImg = new Image();
+              designImg.crossOrigin = "Anonymous";
+              designImg.src = designImage.src;
+
+              designImg.onload = function() {
+                // Calculate design position and size relative to the canvas
+                const tshirtRect = tshirtPreview.getBoundingClientRect();
+                const designRect = designArea.getBoundingClientRect();
+
+                // Calculate the position of the design on the canvas
+                const designX = (designRect.left - tshirtRect.left) * (canvas.width / tshirtRect.width);
+                const designY = (designRect.top - tshirtRect.top) * (canvas.height / tshirtRect.height);
+                const designWidth = designRect.width * (canvas.width / tshirtRect.width);
+                const designHeight = designRect.height * (canvas.height / tshirtRect.height);
+
+                // Draw the design on the canvas
+                ctx.drawImage(designImg, designX, designY, designWidth, designHeight);
+
+                // Convert canvas to data URL
+                const renderedImageData = canvas.toDataURL('image/png');
+
+                // Set the rendered image data to the hidden input
+                document.getElementById('rendered-image-data').value = renderedImageData;
+
+                resolve(renderedImageData);
+              };
+
+              designImg.onerror = function() {
+                reject(new Error('Failed to load design image'));
+              };
+            } else {
+              // No design, just return the t-shirt image
+              const renderedImageData = canvas.toDataURL('image/png');
+              document.getElementById('rendered-image-data').value = renderedImageData;
+              resolve(renderedImageData);
+            }
+          };
+
+          tshirtImg.onerror = function() {
+            reject(new Error('Failed to load t-shirt image'));
+          };
+        } catch (error) {
+          reject(error);
+        }
+      });
+    }
+
     if (form) {
-      form.addEventListener("submit", function (event) {
+      form.addEventListener("submit", async function (event) {
+        event.preventDefault();
+
         if (!form.checkValidity()) {
-          event.preventDefault();
           event.stopPropagation();
+          form.classList.add("was-validated");
+          return;
         }
 
         // Save design position and size data
@@ -419,7 +496,6 @@
         // Check if at least one color is selected for availability
         const selectedColors = getSelectedAvailableColors();
         if (selectedColors.length === 0) {
-          event.preventDefault();
           event.stopPropagation();
           alert('Пожалуйста, выберите хотя бы один цвет для продажи');
           return;
@@ -438,6 +514,26 @@
         }
 
         form.classList.add("was-validated");
+
+        // Disable submit button to prevent multiple submissions
+        const submitButton = document.getElementById('submit-button');
+        submitButton.disabled = true;
+        submitButton.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Обработка...';
+
+        try {
+          // Render the t-shirt with design
+          await renderTshirtWithDesign();
+
+          // Submit the form
+          form.submit();
+        } catch (error) {
+          console.error('Error rendering t-shirt with design:', error);
+          alert('Произошла ошибка при обработке изображения. Пожалуйста, попробуйте еще раз.');
+
+          // Re-enable submit button
+          submitButton.disabled = false;
+          submitButton.innerHTML = '<i class="fas fa-cloud-upload-alt me-2"></i>Отправить на проверку';
+        }
       });
     }
 

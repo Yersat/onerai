@@ -16,10 +16,21 @@
 <section class="py-5">
   <div class="container">
     <div class="row g-5">
-      <!-- Product image -->
+      <!-- Product preview with t-shirt mockup -->
       <div class="col-lg-6">
-        <div class="product-image-container">
-          <img src="{{ product.image.url }}" alt="{{ product.name }}" class="img-fluid rounded">
+        <div class="product-preview-container">
+          {% if product.rendered_image %}
+            <!-- Show the rendered t-shirt with design applied -->
+            <img src="{{ product.rendered_image.url }}" alt="{{ product.name }}" class="img-fluid" id="rendered-preview">
+          {% else %}
+            <!-- Fallback to dynamic design placement if no rendered image -->
+            <div class="tshirt-container">
+              <img src="{% static 'img/tshirt-mockups/tshirt-black.png' %}" alt="T-shirt" class="tshirt-img" id="tshirt-preview">
+              <div class="design-display">
+                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="design-image" id="design-image">
+              </div>
+            </div>
+          {% endif %}
         </div>
       </div>
 
@@ -130,14 +141,113 @@
 {% block scripts %}
 <script>
   document.addEventListener("DOMContentLoaded", function() {
-    // Color selection
-    const colorOptions = document.querySelectorAll(".color-option");
+    // T-shirt images for different colors
+    const tshirtImages = {
+      black: "{% static 'img/tshirt-mockups/tshirt-black.png' %}",
+      white: "{% static 'img/tshirt-mockups/tshirt-white.png' %}",
+      red: "{% static 'img/tshirt-mockups/tshirt-red.png' %}",
+      blue: "{% static 'img/tshirt-mockups/tshirt-blue.png' %}",
+      yellow: "{% static 'img/tshirt-mockups/tshirt-yellow.png' %}",
+      green: "{% static 'img/tshirt-mockups/tshirt-green.png' %}",
+      grey: "{% static 'img/tshirt-mockups/tshirt-grey.png' %}"
+    };
 
+    const colorOptions = document.querySelectorAll(".color-option");
+    const productPreviewContainer = document.querySelector(".product-preview-container");
+
+    // Initial state check
+    const hasRenderedImage = document.getElementById("rendered-preview") !== null;
+    let currentMode = hasRenderedImage ? "rendered" : "dynamic";
+
+    // If we start with dynamic mode, get references to the elements
+    let tshirtPreview = document.getElementById("tshirt-preview");
+    let designImage = document.getElementById("design-image");
+
+    // Function to switch from rendered image to dynamic design
+    function switchToTshirtWithDesign(color) {
+      // Clear the preview container
+      productPreviewContainer.innerHTML = '';
+
+      // Create the tshirt container
+      const tshirtContainer = document.createElement("div");
+      tshirtContainer.className = "tshirt-container";
+
+      // Create the t-shirt image
+      tshirtPreview = document.createElement("img");
+      tshirtPreview.id = "tshirt-preview";
+      tshirtPreview.src = tshirtImages[color];
+      tshirtPreview.alt = "T-shirt";
+      tshirtPreview.className = "tshirt-img";
+
+      // Create the design container
+      const designContainer = document.createElement("div");
+      designContainer.className = "design-display";
+
+      // Create the design image
+      designImage = document.createElement("img");
+      designImage.id = "design-image";
+      designImage.src = "{{ product.image.url }}";
+      designImage.alt = "{{ product.name }}";
+      designImage.className = "design-image";
+
+      // Apply appropriate filter based on t-shirt color
+      applyDesignFilter(designImage, color);
+
+      // Assemble the elements
+      designContainer.appendChild(designImage);
+      tshirtContainer.appendChild(tshirtPreview);
+      tshirtContainer.appendChild(designContainer);
+      productPreviewContainer.appendChild(tshirtContainer);
+
+      // Update the mode
+      currentMode = "dynamic";
+    }
+
+    // Function to apply the appropriate filter to the design based on t-shirt color
+    function applyDesignFilter(designElement, color) {
+      if (color === 'black' || color === 'blue' || color === 'green') {
+        // For dark t-shirts, add a subtle brightness to the design
+        designElement.style.filter = 'brightness(1.2) drop-shadow(0 0 3px rgba(255, 255, 255, 0.3))';
+      } else {
+        // For light t-shirts, keep normal brightness
+        designElement.style.filter = 'drop-shadow(0 0 2px rgba(0, 0, 0, 0.2))';
+      }
+    }
+
+    // Set initial t-shirt color based on first selected color option
+    const initialSelectedColor = document.querySelector(".color-option.selected");
+    if (initialSelectedColor) {
+      const initialColor = initialSelectedColor.getAttribute("data-color");
+
+      // If we're in dynamic mode, set the initial color and filter
+      if (currentMode === "dynamic" && tshirtPreview && designImage) {
+        if (tshirtImages[initialColor]) {
+          tshirtPreview.src = tshirtImages[initialColor];
+        }
+        applyDesignFilter(designImage, initialColor);
+      }
+    }
+
+    // Color selection
     colorOptions.forEach(option => {
       option.addEventListener("click", function() {
-        // Update selected color
+        // Get selected color
+        const color = this.getAttribute("data-color");
+
+        // Update selected color indicator
         colorOptions.forEach(opt => opt.classList.remove("selected"));
         this.classList.add("selected");
+
+        if (currentMode === "dynamic") {
+          // We're already in dynamic mode, just update the t-shirt color
+          if (tshirtImages[color] && tshirtPreview) {
+            tshirtPreview.src = tshirtImages[color];
+            applyDesignFilter(designImage, color);
+          }
+        } else {
+          // We need to switch from rendered to dynamic
+          switchToTshirtWithDesign(color);
+        }
       });
     });
   });

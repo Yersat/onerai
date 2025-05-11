@@ -39,9 +39,11 @@ class Product(models.Model):
     name = models.CharField(max_length=200)
     description = models.TextField()
     price = models.DecimalField(max_digits=10, decimal_places=2)
-    image = models.ImageField(upload_to="products/")
+    image = models.ImageField(upload_to="products/", help_text="Original design image")
+    rendered_image = models.ImageField(upload_to="products/rendered/", blank=True, null=True, help_text="T-shirt with design applied")
     tags = models.CharField(max_length=255, blank=True, help_text="Comma-separated hashtags")
     available_colors = models.CharField(max_length=255, default="black,white", help_text="Comma-separated available colors")
+    design_position = models.TextField(blank=True, help_text="JSON data for design position and size")
     creator = models.ForeignKey(User, on_delete=models.CASCADE, related_name="products")
     category = models.ForeignKey(
         Category, on_delete=models.SET_NULL, null=True, related_name="products"
