@@ -1,0 +1,343 @@
+{% extends 'base/base.html' %}
+{% load static %}
+{% block title %}Оформление заказа{% endblock %}
+{% block content %}
+<!-- Checkout header -->
+<section class="py-4 bg-dark">
+  <div class="container">
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb mb-0">
+        <li class="breadcrumb-item"><a href="{% url 'store:index' %}">Главная</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'store:cart' %}">Корзина</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Оформление заказа</li>
+      </ol>
+    </nav>
+  </div>
+</section>
+
+<!-- Checkout content -->
+<section class="py-5">
+  <div class="container">
+    <div class="row mb-4">
+      <div class="col-12">
+        <h1 class="h2 mb-4">Оформление заказа</h1>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-lg-8">
+        <!-- Shipping address selection -->
+        <div class="card mb-4">
+          <div class="card-header bg-dark text-white">
+            <h5 class="mb-0">Адрес доставки</h5>
+          </div>
+          <div class="card-body">
+            <form id="checkout-form" method="post" class="needs-validation" novalidate>
+              {% csrf_token %}
+
+              {% if shipping_addresses %}
+              <div class="mb-4">
+                <h6 class="mb-3">Выберите адрес доставки</h6>
+
+                {% for address in shipping_addresses %}
+                <div class="form-check mb-2">
+                  <input class="form-check-input" type="radio" name="address_choice" id="address-{{ address.id }}" value="{{ address.id }}" {% if address.is_default %}checked{% endif %}>
+                  <label class="form-check-label" for="address-{{ address.id }}">
+                    <strong>{{ address.full_name }}</strong><br>
+                    {{ address.address }}, {{ address.city }}, {{ address.postal_code }}<br>
+                    Тел: {{ address.phone }}
+                    {% if address.is_default %}<span class="badge bg-primary ms-2">По умолчанию</span>{% endif %}
+                  </label>
+                </div>
+                {% endfor %}
+
+                <div class="form-check mb-2">
+                  <input class="form-check-input" type="radio" name="address_choice" id="address-new" value="new">
+                  <label class="form-check-label" for="address-new">
+                    <strong>Добавить новый адрес</strong>
+                  </label>
+                </div>
+              </div>
+              {% else %}
+              <!-- If no addresses exist, automatically select the new address option -->
+              <input type="hidden" name="address_choice" value="new">
+              {% endif %}
+
+              <div id="new-address-form" {% if shipping_addresses %}class="d-none"{% endif %}>
+                <h6 class="mb-3">Новый адрес доставки</h6>
+
+                <div class="row g-3">
+                  <div class="col-12">
+                    <label for="{{ form.full_name.id_for_label }}" class="form-label">{{ form.full_name.label }}</label>
+                    {{ form.full_name }}
+                    <div class="invalid-feedback">
+                      Пожалуйста, введите ваше полное имя.
+                    </div>
+                  </div>
+
+                  <div class="col-12">
+                    <label for="{{ form.phone.id_for_label }}" class="form-label">{{ form.phone.label }}</label>
+                    {{ form.phone }}
+                    <div class="invalid-feedback">
+                      Пожалуйста, введите ваш номер телефона.
+                    </div>
+                  </div>
+
+                  <div class="col-12">
+                    <label for="{{ form.address.id_for_label }}" class="form-label">{{ form.address.label }}</label>
+                    {{ form.address }}
+                    <div class="invalid-feedback">
+                      Пожалуйста, введите ваш адрес.
+                    </div>
+                  </div>
+
+                  <div class="col-md-6">
+                    <label for="{{ form.city.id_for_label }}" class="form-label">{{ form.city.label }}</label>
+                    {{ form.city }}
+                    <div class="invalid-feedback">
+                      Пожалуйста, введите ваш город.
+                    </div>
+                  </div>
+
+                  <div class="col-md-6">
+                    <label for="{{ form.postal_code.id_for_label }}" class="form-label">{{ form.postal_code.label }}</label>
+                    {{ form.postal_code }}
+                    <div class="invalid-feedback">
+                      Пожалуйста, введите ваш почтовый индекс.
+                    </div>
+                  </div>
+
+                  <div class="col-12">
+                    <div class="form-check">
+                      {{ form.is_default }}
+                      <label class="form-check-label" for="{{ form.is_default.id_for_label }}">
+                        {{ form.is_default.label }}
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Payment method section -->
+              <div class="mt-4">
+                <h6 class="mb-3">Способ оплаты</h6>
+                <div class="form-check mb-2">
+                  <input class="form-check-input" type="radio" name="payment_method" id="payment-cash" value="cash" checked>
+                  <label class="form-check-label" for="payment-cash">
+                    Отправить заявку на оплату
+                  </label>
+                </div>
+                <div class="form-check mb-2">
+                  <input class="form-check-input" type="radio" name="payment_method" id="payment-card" value="card">
+                  <label class="form-check-label" for="payment-card">
+                    Оплата картой (скоро)
+                  </label>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-4">
+        <!-- Order summary -->
+        <div class="card mb-4">
+          <div class="card-header bg-dark text-white">
+            <h5 class="mb-0">Ваш заказ</h5>
+          </div>
+          <div class="card-body">
+            {% for item in cart_items %}
+            <div class="d-flex justify-content-between mb-2">
+              <div>
+                <span>{{ item.product.name }}</span>
+                <small class="d-block text-muted">{{ item.size }},
+                  {% if item.color == "black" %}Черный
+                  {% elif item.color == "white" %}Белый
+                  {% elif item.color == "red" %}Красный
+                  {% elif item.color == "blue" %}Синий
+                  {% elif item.color == "yellow" %}Желтый
+                  {% elif item.color == "green" %}Зеленый
+                  {% elif item.color == "grey" %}Серый
+                  {% else %}{{ item.color }}
+                  {% endif %}
+                </small>
+              </div>
+              <span>{{ item.product.price }} ₸</span>
+            </div>
+            {% endfor %}
+
+            <hr>
+
+            <div class="d-flex justify-content-between mb-2">
+              <span>Товары ({{ cart_items|length }})</span>
+              <span>{{ total_price }} ₸</span>
+            </div>
+            <div class="d-flex justify-content-between mb-2">
+              <span>Доставка</span>
+              <span>Бесплатно</span>
+            </div>
+
+            <hr>
+
+            <div class="d-flex justify-content-between mb-4">
+              <strong>Итого к оплате</strong>
+              <strong>{{ total_price }} ₸</strong>
+            </div>
+
+            <button type="submit" form="checkout-form" class="btn btn-primary w-100">
+              Оформить заказ
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    // Toggle new address form based on radio selection
+    const addressRadios = document.querySelectorAll('input[name="address_choice"]');
+    const newAddressForm = document.getElementById('new-address-form');
+
+    // Function to check if any address is selected
+    function isAddressSelected() {
+      // If there are no address radios (only hidden input), return true
+      if (addressRadios.length === 0) {
+        return true;
+      }
+      return Array.from(addressRadios).some(radio => radio.checked);
+    }
+
+    // Function to validate new address form fields
+    function validateNewAddressForm() {
+      const fullNameInput = document.querySelector('#{{ form.full_name.id_for_label }}');
+      const phoneInput = document.querySelector('#{{ form.phone.id_for_label }}');
+      const addressInput = document.querySelector('#{{ form.address.id_for_label }}');
+      const cityInput = document.querySelector('#{{ form.city.id_for_label }}');
+      const postalCodeInput = document.querySelector('#{{ form.postal_code.id_for_label }}');
+
+      return fullNameInput.value.trim() !== '' &&
+             phoneInput.value.trim() !== '' &&
+             addressInput.value.trim() !== '' &&
+             cityInput.value.trim() !== '' &&
+             postalCodeInput.value.trim() !== '';
+    }
+
+    // Auto-select "new address" option when user starts filling out the form
+    const newAddressInputs = [
+      document.querySelector('#{{ form.full_name.id_for_label }}'),
+      document.querySelector('#{{ form.phone.id_for_label }}'),
+      document.querySelector('#{{ form.address.id_for_label }}'),
+      document.querySelector('#{{ form.city.id_for_label }}'),
+      document.querySelector('#{{ form.postal_code.id_for_label }}')
+    ];
+
+    // Check if any of the new address fields already have values (e.g., after a page refresh)
+    function checkForExistingValues() {
+      const hasValues = newAddressInputs.some(input => input && input.value.trim() !== '');
+      if (hasValues) {
+        const newAddressRadio = document.querySelector('#address-new');
+        if (newAddressRadio) {
+          newAddressRadio.checked = true;
+          newAddressForm.classList.remove('d-none');
+        }
+      }
+    }
+
+    // Run this check when the page loads
+    checkForExistingValues();
+
+    newAddressInputs.forEach(input => {
+      if (input) {
+        // When the user focuses on any input field
+        input.addEventListener('focus', function() {
+          const newAddressRadio = document.querySelector('#address-new');
+          if (newAddressRadio) {
+            newAddressRadio.checked = true;
+            newAddressForm.classList.remove('d-none');
+          }
+        });
+
+        // Also check on input to handle autofill
+        input.addEventListener('input', function() {
+          const newAddressRadio = document.querySelector('#address-new');
+          if (newAddressRadio) {
+            newAddressRadio.checked = true;
+            newAddressForm.classList.remove('d-none');
+          }
+        });
+      }
+    });
+
+    addressRadios.forEach(radio => {
+      radio.addEventListener('change', function() {
+        if (this.value === 'new') {
+          newAddressForm.classList.remove('d-none');
+        } else {
+          newAddressForm.classList.add('d-none');
+        }
+      });
+    });
+
+    // Form validation
+    const form = document.getElementById('checkout-form');
+    const submitButton = document.querySelector('button[type="submit"]');
+
+    form.addEventListener('submit', function(event) {
+      // Prevent default form submission
+      event.preventDefault();
+
+      // Check if we have a hidden input for new address (no existing addresses)
+      const hiddenAddressChoice = document.querySelector('input[type="hidden"][name="address_choice"]');
+
+      // If we have existing addresses
+      if (!hiddenAddressChoice) {
+        // Check if any address is selected
+        if (!isAddressSelected()) {
+          // Check if the user has filled out the new address form
+          if (validateNewAddressForm()) {
+            // Auto-select the new address option
+            const newAddressRadio = document.querySelector('#address-new');
+            if (newAddressRadio) {
+              newAddressRadio.checked = true;
+            }
+          } else {
+            alert('Пожалуйста, выберите адрес доставки или заполните форму нового адреса');
+            return;
+          }
+        }
+
+        // Get the selected address option
+        const selectedAddressOption = Array.from(addressRadios).find(radio => radio.checked);
+
+        // If "new address" is selected, validate the new address form
+        if (selectedAddressOption && selectedAddressOption.value === 'new') {
+          if (!validateNewAddressForm()) {
+            form.classList.add('was-validated');
+            return;
+          }
+        }
+      } else {
+        // We're using the hidden input (no existing addresses)
+        // Just validate the new address form
+        if (!validateNewAddressForm()) {
+          form.classList.add('was-validated');
+          return;
+        }
+      }
+
+      // If we get here, the form is valid
+
+      // Disable submit button to prevent multiple submissions
+      submitButton.disabled = true;
+      submitButton.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Обработка...';
+
+      // Submit the form
+      form.submit();
+    });
+  });
+</script>
+{% endblock %}
