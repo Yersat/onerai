@@ -86,23 +86,34 @@
 
         <div class="mb-4">
           <h5 class="mb-3">Размер</h5>
-          <div class="d-flex flex-wrap gap-2">
-            <button class="btn btn-outline-primary">S</button>
-            <button class="btn btn-outline-primary">M</button>
-            <button class="btn btn-outline-primary">L</button>
-            <button class="btn btn-outline-primary">XL</button>
-            <button class="btn btn-outline-primary">XXL</button>
+          <div class="d-flex flex-wrap gap-3" id="size-selector">
+            <button class="btn btn-outline-primary size-btn" data-size="S">S</button>
+            <button class="btn btn-outline-primary size-btn" data-size="M">M</button>
+            <button class="btn btn-outline-primary size-btn" data-size="L">L</button>
+            <button class="btn btn-outline-primary size-btn" data-size="XL">XL</button>
+            <button class="btn btn-outline-primary size-btn" data-size="XXL">XXL</button>
+          </div>
+          <div class="mt-2 text-muted small">
+            <i class="fas fa-info-circle me-1"></i> Выберите размер футболки
           </div>
         </div>
 
-        <div class="d-flex flex-wrap gap-3 mb-4">
-          <button class="btn btn-primary btn-lg">
-            <i class="fas fa-shopping-cart me-2"></i>В корзину
-          </button>
-          <button class="btn btn-outline-primary btn-lg">
-            <i class="fas fa-heart me-2"></i>В избранное
-          </button>
-        </div>
+        <!-- Form for adding to cart -->
+        <form id="add-to-cart-form" method="post" action="{% url 'store:cart' %}">
+          {% csrf_token %}
+          <input type="hidden" name="product_id" value="{{ product.id }}">
+          <input type="hidden" id="selected-size" name="selected_size" value="">
+          <input type="hidden" id="selected-color" name="selected_color" value="{{ product.available_colors|split_tags|first }}">
+
+          <div class="d-flex flex-wrap gap-3 mb-4">
+            <button type="button" class="btn btn-primary btn-lg" id="add-to-cart-btn">
+              <i class="fas fa-shopping-cart me-2"></i>В корзину
+            </button>
+            <button type="button" class="btn btn-outline-primary btn-lg" id="add-to-wishlist-btn">
+              <i class="fas fa-heart me-2"></i>В избранное
+            </button>
+          </div>
+        </form>
 
         <div class="d-flex align-items-center">
           <img src="{% if product.creator.profile_image %}{{ product.creator.profile_image.url }}{% else %}{% static 'img/default-avatar.png' %}{% endif %}" alt="{{ product.creator.username }}" class="rounded-circle me-2" width="40" height="40">
@@ -152,6 +163,99 @@
       grey: "{% static 'img/tshirt-mockups/tshirt-grey.png' %}"
     };
 
+    // Size selection functionality
+    const sizeButtons = document.querySelectorAll('.size-btn');
+    const selectedSizeInput = document.getElementById('selected-size');
+    const addToCartBtn = document.getElementById('add-to-cart-btn');
+    let selectedSize = null;
+
+    // Function to apply active styles to a button
+    function applyActiveStyles(button) {
+      // Add active class
+      button.classList.add('active');
+      // Change button style to solid
+      button.classList.remove('btn-outline-primary');
+      button.classList.add('btn-primary');
+      // Apply permanent styling for the selected button
+      button.style.transform = 'scale(1.1)';
+      button.style.boxShadow = '0 0 10px rgba(13, 110, 253, 0.5)';
+
+      // Add checkmark if it doesn't exist yet
+      if (!button.querySelector('.size-checkmark')) {
+        const checkmark = document.createElement('span');
+        checkmark.className = 'size-checkmark';
+        checkmark.innerHTML = '✓';
+        button.appendChild(checkmark);
+      }
+    }
+
+    // Function to remove active styles from a button
+    function removeActiveStyles(button) {
+      button.classList.remove('active');
+      button.classList.remove('btn-primary');
+      button.classList.add('btn-outline-primary');
+      button.style.transform = '';
+      button.style.boxShadow = '';
+
+      // Remove checkmark if it exists
+      const checkmark = button.querySelector('.size-checkmark');
+      if (checkmark) {
+        button.removeChild(checkmark);
+      }
+    }
+
+    // Set the first size button as selected by default
+    if (sizeButtons.length > 0) {
+      const firstSizeBtn = sizeButtons[0];
+      applyActiveStyles(firstSizeBtn);
+      selectedSize = firstSizeBtn.getAttribute('data-size');
+      selectedSizeInput.value = selectedSize;
+      console.log('Default size selected:', selectedSize);
+    }
+
+    // Add click event listener to each size button
+    sizeButtons.forEach(button => {
+      button.addEventListener('click', function() {
+        // Remove active class and styles from all buttons
+        sizeButtons.forEach(btn => {
+          removeActiveStyles(btn);
+        });
+
+        // Apply active styles to clicked button
+        applyActiveStyles(this);
+
+        // Add animation effect for better visibility
+        this.animate([
+          { transform: 'scale(1.2)' },
+          { transform: 'scale(1.1)' }
+        ], {
+          duration: 300,
+          easing: 'ease-out',
+          fill: 'forwards' // Keep the final state
+        });
+
+        // Store selected size
+        selectedSize = this.getAttribute('data-size');
+        // Update hidden input
+        selectedSizeInput.value = selectedSize;
+        console.log('Selected size:', selectedSize);
+      });
+    });
+
+    // Add to cart button click handler
+    addToCartBtn.addEventListener('click', function(e) {
+      // Check if size is selected
+      if (!selectedSize) {
+        e.preventDefault();
+        alert('Пожалуйста, выберите размер');
+      } else {
+        // Size is selected, proceed with adding to cart
+        console.log('Adding to cart with size:', selectedSize);
+        // Submit the form
+        document.getElementById('add-to-cart-form').submit();
+      }
+    });
+
     const colorOptions = document.querySelectorAll(".color-option");
     const productPreviewContainer = document.querySelector(".product-preview-container");
 
@@ -163,7 +267,47 @@
     let tshirtPreview = document.getElementById("tshirt-preview");
     let designImage = document.getElementById("design-image");
 
-    // Function to switch from rendered image to dynamic design
+    // Function to load the rendered image for a specific color
+    function loadRenderedImageForColor(color) {
+      // Get the rendered image URL for this color
+      const renderedImageUrl = getRenderedImageUrl(color);
+
+      if (renderedImageUrl) {
+        // Clear the preview container
+        productPreviewContainer.innerHTML = '';
+
+        // Create the rendered image
+        const renderedImg = document.createElement("img");
+        renderedImg.id = "rendered-preview";
+        renderedImg.src = renderedImageUrl;
+        renderedImg.alt = "{{ product.name }}";
+        renderedImg.className = "img-fluid";
+
+        // Add to container
+        productPreviewContainer.appendChild(renderedImg);
+
+        // Update the mode
+        currentMode = "rendered";
+        return true;
+      }
+
+      return false;
+    }
+
+    // Function to get the rendered image URL for a specific color
+    function getRenderedImageUrl(color) {
+      // Check if we have a rendered image for this color
+      {% for rendered_image in product.rendered_images.all %}
+        if ("{{ rendered_image.color }}" === color) {
+          return "{{ rendered_image.image.url }}";
+        }
+      {% endfor %}
+
+      // If no specific color image found, fall back to dynamic mode
+      return null;
+    }
+
+    // Function to switch to dynamic design mode if no rendered image is available
     function switchToTshirtWithDesign(color) {
       // Clear the preview container
       productPreviewContainer.innerHTML = '';
@@ -219,16 +363,21 @@
     if (initialSelectedColor) {
       const initialColor = initialSelectedColor.getAttribute("data-color");
 
-      // If we're in dynamic mode, set the initial color and filter
-      if (currentMode === "dynamic" && tshirtPreview && designImage) {
-        if (tshirtImages[initialColor]) {
-          tshirtPreview.src = tshirtImages[initialColor];
+      // Try to load the rendered image for the initial color
+      if (!loadRenderedImageForColor(initialColor)) {
+        // If no rendered image is available and we're in dynamic mode, set the initial color and filter
+        if (currentMode === "dynamic" && tshirtPreview && designImage) {
+          if (tshirtImages[initialColor]) {
+            tshirtPreview.src = tshirtImages[initialColor];
+          }
+          applyDesignFilter(designImage, initialColor);
         }
-        applyDesignFilter(designImage, initialColor);
       }
     }
 
     // Color selection
+    const selectedColorInput = document.getElementById('selected-color');
+
     colorOptions.forEach(option => {
       option.addEventListener("click", function() {
         // Get selected color
@@ -238,15 +387,22 @@
         colorOptions.forEach(opt => opt.classList.remove("selected"));
         this.classList.add("selected");
 
-        if (currentMode === "dynamic") {
-          // We're already in dynamic mode, just update the t-shirt color
-          if (tshirtImages[color] && tshirtPreview) {
-            tshirtPreview.src = tshirtImages[color];
-            applyDesignFilter(designImage, color);
+        // Update hidden input for color
+        selectedColorInput.value = color;
+
+        // Try to load the rendered image for this color
+        if (!loadRenderedImageForColor(color)) {
+          // If no rendered image is available, switch to dynamic mode
+          if (currentMode === "dynamic") {
+            // We're already in dynamic mode, just update the t-shirt color
+            if (tshirtImages[color] && tshirtPreview) {
+              tshirtPreview.src = tshirtImages[color];
+              applyDesignFilter(designImage, color);
+            }
+          } else {
+            // We need to switch from rendered to dynamic
+            switchToTshirtWithDesign(color);
           }
-        } else {
-          // We need to switch from rendered to dynamic
-          switchToTshirtWithDesign(color);
         }
       });
     });

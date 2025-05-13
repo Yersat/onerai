@@ -320,3 +320,52 @@
   /* Add a subtle shadow to make the design pop against the t-shirt */
   filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.2));
 }
+
+/* Enhanced Size Selection Styles */
+.size-btn {
+  min-width: 50px;
+  height: 50px;
+  font-weight: 600;
+  font-size: 1.1rem;
+  transition: all 0.3s ease;
+  border-width: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative; /* Required for absolute positioning of checkmark */
+  cursor: pointer;
+}
+
+.size-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.size-btn.active {
+  background-color: #0d6efd !important; /* Bootstrap primary color with !important to ensure it's applied */
+  color: white !important;
+  transform: scale(1.1) !important;
+  box-shadow: 0 0 15px rgba(13, 110, 253, 0.6) !important; /* Enhanced glow effect */
+  border-width: 2px !important;
+  position: relative;
+  z-index: 2; /* Ensure the active button appears above others */
+}
+
+.size-checkmark {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  width: 20px;
+  height: 20px;
+  background-color: #0d6efd;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 12px;
+  border: 2px solid white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* End of size button styling */

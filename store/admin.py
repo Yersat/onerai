@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.utils.html import format_html
-from .models import Category, Product
+from .models import Category, Product, ProductRenderedImage, Order, OrderItem, ShippingAddress
 
 
 @admin.register(Category)
@@ -9,6 +9,20 @@ class CategoryAdmin(admin.ModelAdmin):
     prepopulated_fields = {"slug": ("name",)}
     search_fields = ("name",)
     ordering = ("name",)
+
+
+@admin.register(ProductRenderedImage)
+class ProductRenderedImageAdmin(admin.ModelAdmin):
+    list_display = ("product", "color", "created_at")
+    list_filter = ("color", "created_at")
+    search_fields = ("product__name", "color")
+    ordering = ("product", "color")
+
+
+class ProductRenderedImageInline(admin.TabularInline):
+    model = ProductRenderedImage
+    extra = 0
+    fields = ('color', 'image')
 
 
 @admin.register(Product)
@@ -28,6 +42,7 @@ class ProductAdmin(admin.ModelAdmin):
     ordering = ("-created_at",)
     readonly_fields = ("created_at", "updated_at")
     actions = ["approve_products", "reject_products"]
+    inlines = [ProductRenderedImageInline]
 
     fieldsets = (
         ("Основная информация", {
@@ -73,3 +88,81 @@ class ProductAdmin(admin.ModelAdmin):
         self.message_user(request, f"{updated} дизайн(ов) отклонено.")
 
     reject_products.short_description = "Отклонить выбранные дизайны"
+
+
+class OrderItemInline(admin.TabularInline):
+    model = OrderItem
+    extra = 0
+    readonly_fields = ('product', 'size', 'color', 'price', 'created_at')
+    can_delete = False
+
+    def has_add_permission(self, request, obj=None):
+        return False
+
+
+@admin.register(Order)
+class OrderAdmin(admin.ModelAdmin):
+    list_display = ('id', 'user', 'total_price', 'status_colored', 'tracking_number', 'created_at')
+    list_filter = ('status', 'created_at')
+    search_fields = ('id', 'user__username', 'user__email', 'tracking_number')
+    readonly_fields = ('created_at', 'updated_at', 'user', 'total_price')
+    inlines = [OrderItemInline]
+    actions = ['mark_as_processing', 'mark_as_shipped', 'mark_as_delivered', 'mark_as_cancelled']
+
+    fieldsets = (
+        ('Информация о заказе', {
+            'fields': ('user', 'total_price', 'status', 'created_at', 'updated_at')
+        }),
+        ('Информация о доставке', {
+            'fields': ('shipping_address', 'tracking_number')
+        }),
+        ('Информация об оплате', {
+            'fields': ('payment_id',)
+        }),
+    )
+
+    def status_colored(self, obj):
+        colors = {
+            Order.STATUS_PENDING: "orange",
+            Order.STATUS_PROCESSING: "blue",
+            Order.STATUS_SHIPPED: "purple",
+            Order.STATUS_DELIVERED: "green",
+            Order.STATUS_CANCELLED: "red",
+        }
+        status_display = dict(Order.STATUS_CHOICES)[obj.status]
+        color = colors.get(obj.status, "black")
+        return format_html('<span style="color: {};">{}</span>', color, status_display)
+
+    status_colored.short_description = "Статус заказа"
+
+    def mark_as_processing(self, request, queryset):
+        updated = queryset.update(status=Order.STATUS_PROCESSING)
+        self.message_user(request, f"{updated} заказ(ов) отмечено как 'В обработке'.")
+
+    mark_as_processing.short_description = "Отметить как 'В обработке'"
+
+    def mark_as_shipped(self, request, queryset):
+        updated = queryset.update(status=Order.STATUS_SHIPPED)
+        self.message_user(request, f"{updated} заказ(ов) отмечено как 'Отправлен'.")
+
+    mark_as_shipped.short_description = "Отметить как 'Отправлен'"
+
+    def mark_as_delivered(self, request, queryset):
+        updated = queryset.update(status=Order.STATUS_DELIVERED)
+        self.message_user(request, f"{updated} заказ(ов) отмечено как 'Доставлен'.")
+
+    mark_as_delivered.short_description = "Отметить как 'Доставлен'"
+
+    def mark_as_cancelled(self, request, queryset):
+        updated = queryset.update(status=Order.STATUS_CANCELLED)
+        self.message_user(request, f"{updated} заказ(ов) отмечено как 'Отменен'.")
+
+    mark_as_cancelled.short_description = "Отметить как 'Отменен'"
+
+
+@admin.register(ShippingAddress)
+class ShippingAddressAdmin(admin.ModelAdmin):
+    list_display = ('user', 'full_name', 'city', 'phone', 'is_default')
+    list_filter = ('city', 'is_default')
+    search_fields = ('user__username', 'full_name', 'address', 'city', 'phone')
+    readonly_fields = ('created_at', 'updated_at')

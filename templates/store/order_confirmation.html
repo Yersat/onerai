@@ -1,0 +1,132 @@
+{% extends 'base/base.html' %}
+{% load static %}
+{% block title %}Заказ оформлен{% endblock %}
+{% block content %}
+<!-- Order confirmation header -->
+<section class="py-4 bg-dark">
+  <div class="container">
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb mb-0">
+        <li class="breadcrumb-item"><a href="{% url 'store:index' %}">Главная</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Заказ оформлен</li>
+      </ol>
+    </nav>
+  </div>
+</section>
+
+<!-- Order confirmation content -->
+<section class="py-5">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        <div class="card border-0 shadow-sm">
+          <div class="card-body p-5 text-center">
+            <div class="mb-4">
+              <i class="fas fa-check-circle text-success fa-5x"></i>
+            </div>
+            <h1 class="h2 fw-bold mb-3">Ваш заказ успешно оформлен!</h1>
+            <p class="lead mb-4">
+              Спасибо за ваш заказ! Номер вашего заказа: <strong>#{{ order.id }}</strong>
+            </p>
+
+            <div class="card mb-4">
+              <div class="card-header bg-light">
+                <h5 class="mb-0">Детали заказа</h5>
+              </div>
+              <div class="card-body">
+                <div class="row mb-3">
+                  <div class="col-md-6 text-md-start">
+                    <h6>Информация о заказе</h6>
+                    <p class="mb-1">Дата заказа: {{ order.created_at|date:"d.m.Y" }}</p>
+                    <p class="mb-1">Статус:
+                      {% if order.status == 'pending' %}
+                        <span class="badge bg-warning">Ожидает подтверждения</span>
+                      {% elif order.status == 'processing' %}
+                        <span class="badge bg-info">В обработке</span>
+                      {% elif order.status == 'shipped' %}
+                        <span class="badge bg-primary">Отправлен</span>
+                      {% elif order.status == 'delivered' %}
+                        <span class="badge bg-success">Доставлен</span>
+                      {% elif order.status == 'cancelled' %}
+                        <span class="badge bg-danger">Отменен</span>
+                      {% endif %}
+                    </p>
+                    <p class="mb-0">Сумма: {{ order.total_price }} ₸</p>
+                  </div>
+                  <div class="col-md-6 text-md-start mt-3 mt-md-0">
+                    <h6>Адрес доставки</h6>
+                    <p class="mb-1">{{ order.shipping_address.full_name }}</p>
+                    <p class="mb-1">{{ order.shipping_address.address }}</p>
+                    <p class="mb-1">{{ order.shipping_address.city }}, {{ order.shipping_address.postal_code }}</p>
+                    <p class="mb-0">Тел: {{ order.shipping_address.phone }}</p>
+                  </div>
+                </div>
+
+                <h6 class="mb-3">Товары</h6>
+                <div class="table-responsive">
+                  <table class="table table-sm">
+                    <thead>
+                      <tr>
+                        <th>Товар</th>
+                        <th>Размер</th>
+                        <th>Цвет</th>
+                        <th class="text-end">Цена</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for item in order.items.all %}
+                      <tr>
+                        <td>{{ item.product.name }}</td>
+                        <td>{{ item.size }}</td>
+                        <td>
+                          {% if item.color == "black" %}Черный
+                          {% elif item.color == "white" %}Белый
+                          {% elif item.color == "red" %}Красный
+                          {% elif item.color == "blue" %}Синий
+                          {% elif item.color == "yellow" %}Желтый
+                          {% elif item.color == "green" %}Зеленый
+                          {% elif item.color == "grey" %}Серый
+                          {% else %}{{ item.color }}
+                          {% endif %}
+                        </td>
+                        <td class="text-end">{{ item.price }} ₸</td>
+                      </tr>
+                      {% endfor %}
+                    </tbody>
+                    <tfoot>
+                      <tr>
+                        <th colspan="3" class="text-end">Доставка:</th>
+                        <td class="text-end">Бесплатно</td>
+                      </tr>
+                      <tr>
+                        <th colspan="3" class="text-end">Итого:</th>
+                        <td class="text-end"><strong>{{ order.total_price }} ₸</strong></td>
+                      </tr>
+                    </tfoot>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <div class="alert alert-info mb-4">
+              <h5 class="alert-heading">Что дальше?</h5>
+              <p>Спасибо за ваш заказ! Наш менеджер свяжется с вами в ближайшее время для подтверждения заказа и обсуждения способа оплаты.</p>
+              <hr>
+              <p class="mb-0">Если у вас возникнут вопросы по заказу, пожалуйста, свяжитесь с нами по телефону или электронной почте.</p>
+            </div>
+
+            <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center">
+              <a href="{% url 'store:index' %}" class="btn btn-primary btn-lg">
+                <i class="fas fa-home me-2"></i>Вернуться на главную
+              </a>
+              <a href="{% url 'store:products' %}" class="btn btn-outline-primary btn-lg">
+                <i class="fas fa-shopping-bag me-2"></i>Продолжить покупки
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

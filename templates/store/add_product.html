@@ -184,7 +184,7 @@
                         <i class="fas fa-info-circle" title="Нажмите на цвета, которые вы хотите сделать доступными для продажи"></i>
                       </div>
                       <div class="color-selector-help">
-                        Нажмите на цвета, чтобы выбрать их для продажи. Некоторые дизайны могут не подходить для определенных цветов.
+                        Нажмите на цвета, чтобы выбрать их для продажи (максимум 3 цвета). Некоторые дизайны могут не подходить для определенных цветов.
                       </div>
                       <div class="color-selector" id="available-colors">
                         <div class="color-option color-black approved" data-color="black" title="Black"></div>
@@ -270,8 +270,11 @@
 
                 <!-- Hidden canvas for rendering the final image -->
                 <div class="d-none">
-                  <canvas id="rendered-tshirt-canvas" width="1200" height="1200"></canvas>
+                  <canvas id="rendered-tshirt-canvas" width="800" height="800"></canvas>
                   <input type="hidden" name="rendered_image_data" id="rendered-image-data">
+                  <div id="rendered-images-container">
+                    <!-- Rendered images for each color will be added here dynamically -->
+                  </div>
                 </div>
 
                 <!-- Submit section -->
@@ -401,8 +404,8 @@
     const form = document.querySelector(".needs-validation");
     const designPositionInput = document.getElementById("design-position-input");
 
-    // Function to render the t-shirt with design as a composite image
-    function renderTshirtWithDesign() {
+    // Function to render the t-shirt with design as a composite image for a specific color
+    function renderTshirtWithDesign(color) {
       return new Promise((resolve, reject) => {
         try {
           const canvas = document.getElementById('rendered-tshirt-canvas');
@@ -414,7 +417,7 @@
           // Create a new image for the t-shirt
           const tshirtImg = new Image();
           tshirtImg.crossOrigin = "Anonymous";
-          tshirtImg.src = tshirtPreview.src;
+          tshirtImg.src = tshirtImages[color]; // Use the specific color t-shirt
 
           tshirtImg.onload = function() {
             // Draw the t-shirt on the canvas
@@ -440,23 +443,26 @@
                 // Draw the design on the canvas
                 ctx.drawImage(designImg, designX, designY, designWidth, designHeight);
 
-                // Convert canvas to data URL
-                const renderedImageData = canvas.toDataURL('image/png');
+                // Convert canvas to data URL with reduced quality JPEG instead of PNG
+                const renderedImageData = canvas.toDataURL('image/jpeg', 0.7);
 
-                // Set the rendered image data to the hidden input
-                document.getElementById('rendered-image-data').value = renderedImageData;
-
-                resolve(renderedImageData);
+                // Return the rendered image data with color information
+                resolve({
+                  color: color,
+                  imageData: renderedImageData
+                });
               };
 
               designImg.onerror = function() {
                 reject(new Error('Failed to load design image'));
               };
             } else {
-              // No design, just return the t-shirt image
-              const renderedImageData = canvas.toDataURL('image/png');
-              document.getElementById('rendered-image-data').value = renderedImageData;
-              resolve(renderedImageData);
+              // No design, just return the t-shirt image with reduced quality JPEG
+              const renderedImageData = canvas.toDataURL('image/jpeg', 0.7);
+              resolve({
+                color: color,
+                imageData: renderedImageData
+              });
             }
           };
 
@@ -467,6 +473,53 @@
           reject(error);
         }
       });
+    }
+
+    // Function to render all selected colors
+    async function renderAllSelectedColors() {
+      try {
+        const selectedColors = getSelectedAvailableColors();
+        if (selectedColors.length === 0) {
+          alert('Пожалуйста, выберите хотя бы один цвет для продажи');
+          return null;
+        }
+
+        // Create a hidden input for each color's rendered image
+        const renderedImagesContainer = document.getElementById('rendered-images-container');
+        renderedImagesContainer.innerHTML = ''; // Clear previous inputs
+
+        // Set the current color as the default rendered image
+        let defaultRenderedImage = null;
+
+        // Render each color
+        for (const color of selectedColors) {
+          const result = await renderTshirtWithDesign(color);
+
+          // Create a hidden input for this color's rendered image
+          const input = document.createElement('input');
+          input.type = 'hidden';
+          input.name = `rendered_image_${color}`;
+          input.value = result.imageData;
+          renderedImagesContainer.appendChild(input);
+
+          // If this is the current color, set it as the default rendered image
+          if (color === currentColor) {
+            defaultRenderedImage = result.imageData;
+            document.getElementById('rendered-image-data').value = result.imageData;
+          }
+        }
+
+        // If the current color isn't in the selected colors, use the first one as default
+        if (!defaultRenderedImage && selectedColors.length > 0) {
+          const result = await renderTshirtWithDesign(selectedColors[0]);
+          document.getElementById('rendered-image-data').value = result.imageData;
+        }
+
+        return true;
+      } catch (error) {
+        console.error('Error rendering t-shirts:', error);
+        return null;
+      }
     }
 
     if (form) {
@@ -521,14 +574,20 @@
         submitButton.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Обработка...';
 
         try {
-          // Render the t-shirt with design
-          await renderTshirtWithDesign();
+          // Render all selected colors
+          const result = await renderAllSelectedColors();
 
-          // Submit the form
-          form.submit();
+          if (result) {
+            // Submit the form
+            form.submit();
+          } else {
+            // Re-enable submit button
+            submitButton.disabled = false;
+            submitButton.innerHTML = '<i class="fas fa-cloud-upload-alt me-2"></i>Отправить на проверку';
+          }
         } catch (error) {
-          console.error('Error rendering t-shirt with design:', error);
-          alert('Произошла ошибка при обработке изображения. Пожалуйста, попробуйте еще раз.');
+          console.error('Error rendering t-shirts with designs:', error);
+          alert('Произошла ошибка при обработке изображений. Пожалуйста, попробуйте еще раз.');
 
           // Re-enable submit button
           submitButton.disabled = false;
@@ -697,6 +756,11 @@
             selectedColors.push(option.getAttribute('data-color'));
           }
         });
+        // Limit to maximum 3 colors to prevent RequestDataTooBig error
+        if (selectedColors.length > 3) {
+          alert('Для предотвращения ошибок загрузки, пожалуйста, выберите не более 3 цветов.');
+          return selectedColors.slice(0, 3);
+        }
         return selectedColors;
       }
 
@@ -745,8 +809,22 @@
       // Available colors selection
       availableColorOptions.forEach(option => {
         option.addEventListener("click", function() {
+          // If this option is already approved and being clicked to unapprove, always allow
+          if (this.classList.contains('approved')) {
+            this.classList.remove('approved');
+            updateAvailableColorsInput();
+            return;
+          }
+
+          // Check if we already have 3 colors selected
+          const currentlySelected = document.querySelectorAll('#available-colors .color-option.approved');
+          if (currentlySelected.length >= 3) {
+            alert('Для предотвращения ошибок загрузки, пожалуйста, выберите не более 3 цветов.');
+            return;
+          }
+
           // Toggle approved class
-          this.classList.toggle("approved");
+          this.classList.add('approved');
 
           // Update hidden input with selected colors
           updateAvailableColorsInput();

@@ -80,7 +80,7 @@
                     </td>
                     <td class="text-center">{{ item.product.price }} ₸</td>
                     <td class="text-center">
-                      <a href="#" class="btn btn-sm btn-outline-danger">
+                      <a href="{% url 'store:remove_from_cart' item.index %}" class="btn btn-sm btn-outline-danger remove-item-btn" data-index="{{ item.index }}">
                         <i class="fas fa-trash-alt"></i>
                       </a>
                     </td>
@@ -112,7 +112,7 @@
               <strong>Итого к оплате</strong>
               <strong>{{ total_price }} ₸</strong>
             </div>
-            <a href="#" class="btn btn-primary w-100">Оформить заказ</a>
+            <a href="{% url 'store:checkout' %}" class="btn btn-primary w-100" id="checkout-btn">Оформить заказ</a>
           </div>
         </div>
       </div>
@@ -159,7 +159,42 @@
           // For light t-shirts, keep normal brightness
           img.style.filter = 'drop-shadow(0 0 2px rgba(0, 0, 0, 0.2))';
         }
+
+        // Ensure the design is visible by setting appropriate size and position
+        const designOverlay = img.closest('.design-overlay');
+        if (designOverlay) {
+          // Make sure the design is properly centered on the t-shirt chest area
+          designOverlay.style.display = 'flex';
+          designOverlay.style.alignItems = 'center';
+          designOverlay.style.justifyContent = 'center';
+        }
       }
+    });
+
+    // Handle checkout button click for authentication check
+    const checkoutBtn = document.getElementById('checkout-btn');
+    if (checkoutBtn) {
+      checkoutBtn.addEventListener('click', function(e) {
+        // Check if user is authenticated
+        const isAuthenticated = {% if user.is_authenticated %}true{% else %}false{% endif %};
+
+        if (!isAuthenticated) {
+          e.preventDefault();
+          // Redirect to login page with next parameter set to checkout
+          window.location.href = "{% url 'creators:login' %}?next={% url 'store:checkout' %}";
+        }
+        // If authenticated, the link will work normally
+      });
+    }
+
+    // Handle remove item buttons with confirmation
+    const removeButtons = document.querySelectorAll('.remove-item-btn');
+    removeButtons.forEach(button => {
+      button.addEventListener('click', function(e) {
+        if (!confirm('Вы уверены, что хотите удалить этот товар из корзины?')) {
+          e.preventDefault();
+        }
+      });
     });
   });
 </script>
@@ -173,6 +208,7 @@
     overflow: hidden;
     border-radius: 4px;
     position: relative;
+    background-color: #f5f5f5;
   }
 
   .cart-item-img img {
@@ -200,16 +236,18 @@
     align-items: center;
     justify-content: center;
     z-index: 2;
+    pointer-events: none;
   }
 
   .design-overlay .design-image {
-    max-width: 50%;
-    max-height: 50%;
+    max-width: 40%;
+    max-height: 40%;
     object-fit: contain;
     position: absolute;
-    top: 30%;
+    top: 33%;
     left: 50%;
     transform: translate(-50%, -50%);
+    z-index: 3;
   }
 
   .color-swatch {

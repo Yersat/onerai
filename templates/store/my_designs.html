@@ -61,11 +61,13 @@
       <div class="col-md-6 col-lg-4">
         <div class="card h-100 {% if product.approval_status == 'pending' %}border-warning{% elif product.approval_status == 'rejected' %}border-danger{% endif %}">
           <div class="card-img-top-container">
-            {% if product.rendered_image %}
-              <img src="{{ product.rendered_image.url }}" class="card-img-top" alt="{{ product.name }}">
-            {% else %}
-              <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}">
-            {% endif %}
+            <a href="{% url 'store:product_detail' product.id %}" class="product-image-link">
+              {% if product.rendered_image %}
+                <img src="{{ product.rendered_image.url }}" class="card-img-top" alt="{{ product.name }}">
+              {% else %}
+                <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}">
+              {% endif %}
+            </a>
 
             <!-- Status badge -->
             {% if product.approval_status == 'pending' %}

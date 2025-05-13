@@ -168,23 +168,25 @@
       <div class="col-6 col-md-4 col-lg-3">
         <div class="product-card card h-100">
           <div class="card-img-top-container">
-            {% if product.rendered_image %}
-            <img
-              src="{{ product.rendered_image.url }}"
-              class="card-img-top"
-              alt="{{ product.name }}"
-            />
-            {% elif product.image %}
-            <img
-              src="{{ product.image.url }}"
-              class="card-img-top"
-              alt="{{ product.name }}"
-            />
-            {% else %}
-            <div class="d-flex justify-content-center align-items-center h-100">
-              <i class="fas fa-tshirt fa-3x text-light"></i>
-            </div>
-            {% endif %}
+            <a href="{% url 'store:product_detail' product.id %}" class="product-image-link">
+              {% if product.rendered_image %}
+              <img
+                src="{{ product.rendered_image.url }}"
+                class="card-img-top"
+                alt="{{ product.name }}"
+              />
+              {% elif product.image %}
+              <img
+                src="{{ product.image.url }}"
+                class="card-img-top"
+                alt="{{ product.name }}"
+              />
+              {% else %}
+              <div class="d-flex justify-content-center align-items-center h-100">
+                <i class="fas fa-tshirt fa-3x text-light"></i>
+              </div>
+              {% endif %}
+            </a>
             <span class="badge bg-primary category-badge"
               >{{ product.category }}</span
             >

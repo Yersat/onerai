@@ -191,7 +191,7 @@
                 <i class="fas fa-heart"></i>
               </a>
               <a
-                href="#"
+                href="{% url 'store:cart' %}"
                 class="nav-icon position-relative"
                 data-bs-toggle="tooltip"
                 title="Корзина"
@@ -199,7 +199,7 @@
                 <i class="fas fa-shopping-bag"></i>
                 <span
                   class="cart-badge badge rounded-pill bg-primary position-absolute"
-                  >0</span
+                  >{% if request.session.cart %}{{ request.session.cart|length }}{% else %}0{% endif %}</span
                 >
               </a>
               {% else %}

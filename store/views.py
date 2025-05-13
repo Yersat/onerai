@@ -257,7 +257,8 @@ def add_product(request):
                 approval_status=Product.STATUS_PENDING  # Set as pending approval
             )
 
-            # Process the rendered image if available
+            # Process the rendered images for each color
+            # First, handle the default rendered image for backward compatibility
             if rendered_image_data and rendered_image_data.startswith('data:image'):
                 # Extract the base64 encoded image data
                 format, imgstr = rendered_image_data.split(';base64,')
@@ -270,6 +271,29 @@ def add_product(request):
                 rendered_image = ContentFile(base64.b64decode(imgstr), name=filename)
                 product.rendered_image = rendered_image
                 product.save()
+
+            # Now process each color's rendered image
+            available_colors = available_colors.split(',')
+            for color in available_colors:
+                color_rendered_image_data = request.POST.get(f'rendered_image_{color}')
+                if color_rendered_image_data and color_rendered_image_data.startswith('data:image'):
+                    # Extract the base64 encoded image data
+                    format, imgstr = color_rendered_image_data.split(';base64,')
+                    ext = format.split('/')[-1]
+
+                    # Generate a unique filename
+                    filename = f"rendered_{color}_{uuid.uuid4().hex}.{ext}"
+
+                    # Convert base64 to file and save
+                    color_rendered_image = ContentFile(base64.b64decode(imgstr), name=filename)
+
+                    # Create a new ProductRenderedImage for this color
+                    from .models import ProductRenderedImage
+                    ProductRenderedImage.objects.create(
+                        product=product,
+                        color=color,
+                        image=color_rendered_image
+                    )
 
             # Update user's designs count
             request.user.designs_count += 1
