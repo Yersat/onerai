@@ -299,11 +299,12 @@
 
 .design-display {
   position: absolute;
-  top: 33%;  /* Centered on the chest area */
+  /* Default positioning - will be overridden by JS when position data is available */
+  top: 35%;  /* Positioned on the chest area - matches the 0.35 value in JS */
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 40%;  /* Larger for better visibility */
-  height: 40%;
+  width: 30%;  /* Match the default size in the design creator (30%) */
+  height: 30%;
   display: flex;
   align-items: center;
   justify-content: center;

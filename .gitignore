@@ -32,4 +32,7 @@ node_modules/
 
 # Other
 *.bak
-*.swp 
+*.swp
+
+# Rendered test images
+temp_rendered_*.jpg

@@ -327,6 +327,50 @@
       const designContainer = document.createElement("div");
       designContainer.className = "design-display";
 
+      // Apply any custom positioning from the product's design_position data if available
+      {% if product.design_position %}
+      try {
+        const positionData = JSON.parse('{{ product.design_position|escapejs }}');
+
+        // If we have explicit position data, apply it
+        if (positionData) {
+          // Apply any custom positioning if available in the data
+          // We'll use the same approach as in the server-side rendering
+          if (positionData.width) {
+            // If width is in pixels, convert to percentage
+            if (positionData.width.includes('px')) {
+              const widthPx = parseFloat(positionData.width.replace('px', ''));
+              // Use parent_width from the position data if available, otherwise fallback to 450
+              const referenceWidth = positionData.parent_width || 450;
+              const widthPercent = (widthPx / referenceWidth) * 100;
+              designContainer.style.width = `${widthPercent}%`;
+              designContainer.style.height = `${widthPercent}%`;
+            }
+          }
+
+          // Apply exact position if available
+          if (positionData.left && positionData.left.includes('px')) {
+            const leftPx = parseFloat(positionData.left.replace('px', ''));
+            const topPx = parseFloat(positionData.top.replace('px', ''));
+            const referenceWidth = positionData.parent_width || 450;
+            const referenceHeight = positionData.parent_height || 450;
+
+            // Calculate position as percentage of container
+            const leftPercent = (leftPx / referenceWidth) * 100;
+            const topPercent = (topPx / referenceHeight) * 100;
+
+            // Apply position
+            designContainer.style.left = `${leftPercent}%`;
+            designContainer.style.top = `${topPercent}%`;
+            // Remove the default transform that centers the design
+            designContainer.style.transform = 'none';
+          }
+        }
+      } catch (e) {
+        console.error('Error parsing design position data:', e);
+      }
+      {% endif %}
+
       // Create the design image
       designImage = document.createElement("img");
       designImage.id = "design-image";

@@ -1,6 +1,7 @@
 import os
 import base64
 import uuid
+import json
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
@@ -9,8 +10,12 @@ from django.core.exceptions import PermissionDenied
 from django.utils.text import slugify
 from django.core.files.base import ContentFile
 from django.urls import reverse
-from .models import Product, Category, ShippingAddress, Order, OrderItem
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
+from .models import Product, Category, ShippingAddress, Order, OrderItem, ProductRenderedImage
 from .forms import ShippingAddressForm
+from .render_utils import create_rendered_product_images, render_design_on_tshirt
 
 User = get_user_model()
 
@@ -229,7 +234,6 @@ def add_product(request):
         available_colors = request.POST.get('available_colors', 'black,white')  # Get available colors
         image = request.FILES.get('image')
         design_position = request.POST.get('design_position')
-        rendered_image_data = request.POST.get('rendered_image_data')
 
         # Basic validation
         if not all([name, description, price, category_name, image]):
@@ -257,43 +261,11 @@ def add_product(request):
                 approval_status=Product.STATUS_PENDING  # Set as pending approval
             )
 
-            # Process the rendered images for each color
-            # First, handle the default rendered image for backward compatibility
-            if rendered_image_data and rendered_image_data.startswith('data:image'):
-                # Extract the base64 encoded image data
-                format, imgstr = rendered_image_data.split(';base64,')
-                ext = format.split('/')[-1]
+            # Use server-side rendering to generate images for all colors
+            available_colors_list = available_colors.split(',')
 
-                # Generate a unique filename
-                filename = f"rendered_{uuid.uuid4().hex}.{ext}"
-
-                # Convert base64 to file and save
-                rendered_image = ContentFile(base64.b64decode(imgstr), name=filename)
-                product.rendered_image = rendered_image
-                product.save()
-
-            # Now process each color's rendered image
-            available_colors = available_colors.split(',')
-            for color in available_colors:
-                color_rendered_image_data = request.POST.get(f'rendered_image_{color}')
-                if color_rendered_image_data and color_rendered_image_data.startswith('data:image'):
-                    # Extract the base64 encoded image data
-                    format, imgstr = color_rendered_image_data.split(';base64,')
-                    ext = format.split('/')[-1]
-
-                    # Generate a unique filename
-                    filename = f"rendered_{color}_{uuid.uuid4().hex}.{ext}"
-
-                    # Convert base64 to file and save
-                    color_rendered_image = ContentFile(base64.b64decode(imgstr), name=filename)
-
-                    # Create a new ProductRenderedImage for this color
-                    from .models import ProductRenderedImage
-                    ProductRenderedImage.objects.create(
-                        product=product,
-                        color=color,
-                        image=color_rendered_image
-                    )
+            # Perform server-side rendering for all selected colors
+            create_rendered_product_images(product, available_colors_list)
 
             # Update user's designs count
             request.user.designs_count += 1
@@ -451,3 +423,78 @@ def remove_from_cart(request, item_index):
 
     # Redirect back to cart
     return redirect("store:cart")
+
+
+@csrf_exempt
+@require_POST
+def render_design_api(request):
+    """API endpoint for server-side rendering of designs on t-shirts"""
+    try:
+        # Extract data from request
+        data = json.loads(request.body)
+        product_id = data.get('product_id')
+        colors = data.get('colors', [])
+        design_position = data.get('design_position', None)  # Allow passing custom position data
+
+        # Validate input
+        if not product_id:
+            return JsonResponse({'error': 'Product ID is required'}, status=400)
+
+        if not colors:
+            return JsonResponse({'error': 'At least one color must be specified'}, status=400)
+
+        # Get the product
+        try:
+            product = Product.objects.get(id=product_id)
+
+            # Update design position if provided
+            if design_position:
+                # Ensure parent container dimensions are included
+                try:
+                    position_data = json.loads(design_position)
+                    if 'parent_width' not in position_data or 'parent_height' not in position_data:
+                        # Add default parent dimensions if not provided
+                        position_data['parent_width'] = 450
+                        position_data['parent_height'] = 450
+                        design_position = json.dumps(position_data)
+                except json.JSONDecodeError:
+                    # If position data is invalid, just use it as is
+                    pass
+
+                product.design_position = design_position
+                product.save(update_fields=['design_position'])
+
+        except Product.DoesNotExist:
+            return JsonResponse({'error': 'Product not found'}, status=404)
+
+        # Check permissions - only the creator or admin can render designs
+        if request.user != product.creator and not request.user.is_staff:
+            return JsonResponse({'error': 'Permission denied'}, status=403)
+
+        # Perform the rendering
+        success = create_rendered_product_images(product, colors)
+
+        if success:
+            # Get the URLs of the rendered images
+            rendered_images = {}
+            for color in colors:
+                try:
+                    rendered_image = ProductRenderedImage.objects.get(product=product, color=color)
+                    rendered_images[color] = rendered_image.image.url
+                except ProductRenderedImage.DoesNotExist:
+                    rendered_images[color] = None
+
+            return JsonResponse({
+                'success': True,
+                'message': 'Images rendered successfully',
+                'rendered_images': rendered_images
+            })
+        else:
+            return JsonResponse({
+                'error': 'Failed to render images'
+            }, status=500)
+
+    except json.JSONDecodeError:
+        return JsonResponse({'error': 'Invalid JSON'}, status=400)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)

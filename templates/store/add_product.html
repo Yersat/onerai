@@ -184,7 +184,7 @@
                         <i class="fas fa-info-circle" title="Нажмите на цвета, которые вы хотите сделать доступными для продажи"></i>
                       </div>
                       <div class="color-selector-help">
-                        Нажмите на цвета, чтобы выбрать их для продажи (максимум 3 цвета). Некоторые дизайны могут не подходить для определенных цветов.
+                        Нажмите на цвета, чтобы выбрать их для продажи. Вы можете выбрать любое количество цветов.
                       </div>
                       <div class="color-selector" id="available-colors">
                         <div class="color-option color-black approved" data-color="black" title="Black"></div>
@@ -523,7 +523,7 @@
     }
 
     if (form) {
-      form.addEventListener("submit", async function (event) {
+      form.addEventListener("submit", function (event) {
         event.preventDefault();
 
         if (!form.checkValidity()) {
@@ -534,13 +534,18 @@
 
         // Save design position and size data
         if (designArea && designPositionInput) {
+          // Get parent container dimensions for accurate position calculation
+          const parentRect = designArea.parentElement.getBoundingClientRect();
+
           const designData = {
             left: designArea.style.left,
             top: designArea.style.top,
             width: designArea.style.width,
             height: designArea.style.height,
             color: currentColor,
-            view: currentView
+            view: currentView,
+            parent_width: parentRect.width,
+            parent_height: parentRect.height
           };
 
           designPositionInput.value = JSON.stringify(designData);
@@ -573,26 +578,8 @@
         submitButton.disabled = true;
         submitButton.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Обработка...';
 
-        try {
-          // Render all selected colors
-          const result = await renderAllSelectedColors();
-
-          if (result) {
-            // Submit the form
-            form.submit();
-          } else {
-            // Re-enable submit button
-            submitButton.disabled = false;
-            submitButton.innerHTML = '<i class="fas fa-cloud-upload-alt me-2"></i>Отправить на проверку';
-          }
-        } catch (error) {
-          console.error('Error rendering t-shirts with designs:', error);
-          alert('Произошла ошибка при обработке изображений. Пожалуйста, попробуйте еще раз.');
-
-          // Re-enable submit button
-          submitButton.disabled = false;
-          submitButton.innerHTML = '<i class="fas fa-cloud-upload-alt me-2"></i>Отправить на проверку';
-        }
+        // Submit the form directly - server will handle the rendering
+        form.submit();
       });
     }
 
@@ -756,10 +743,10 @@
             selectedColors.push(option.getAttribute('data-color'));
           }
         });
-        // Limit to maximum 3 colors to prevent RequestDataTooBig error
-        if (selectedColors.length > 3) {
-          alert('Для предотвращения ошибок загрузки, пожалуйста, выберите не более 3 цветов.');
-          return selectedColors.slice(0, 3);
+        // Ensure at least one color is selected
+        if (selectedColors.length === 0) {
+          alert('Пожалуйста, выберите хотя бы один цвет для продажи');
+          return ['black']; // Default to black if none selected
         }
         return selectedColors;
       }
@@ -813,13 +800,6 @@
           if (this.classList.contains('approved')) {
             this.classList.remove('approved');
             updateAvailableColorsInput();
-            return;
-          }
-
-          // Check if we already have 3 colors selected
-          const currentlySelected = document.querySelectorAll('#available-colors .color-option.approved');
-          if (currentlySelected.length >= 3) {
-            alert('Для предотвращения ошибок загрузки, пожалуйста, выберите не более 3 цветов.');
             return;
           }
 
