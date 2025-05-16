@@ -1,0 +1,401 @@
+{% extends 'base/base.html' %} {% load static %} {% block title %}Создать дизайн - onerai{% endblock %} {% block content %}
+<!-- Create design header -->
+<section class="py-4 bg-dark">
+  <div class="container">
+    <h1 class="h2 fw-bold mb-2">Создать новый дизайн</h1>
+    <p class="lead mb-0">Загрузите свой дизайн и начните зарабатывать</p>
+  </div>
+</section>
+
+<!-- Create design form -->
+<section class="py-5">
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-lg-8">
+        <div class="card border-0 shadow-sm">
+          <div class="card-body p-4">
+            <form
+              action="{% url 'designs:add_design' %}"
+              method="post"
+              enctype="multipart/form-data"
+              class="needs-validation"
+              novalidate
+            >
+              {% csrf_token %}
+              <div class="row g-4">
+                <!-- Basic info -->
+                <div class="col-12">
+                  <h4 class="border-bottom pb-3 mb-4">Основная информация</h4>
+                </div>
+
+                <div class="col-md-6">
+                  <label for="id_name" class="form-label">Название дизайна *</label>
+                  {{ form.name }}
+                  <div class="invalid-feedback">
+                    Пожалуйста, укажите название дизайна
+                  </div>
+                </div>
+
+                <div class="col-md-6">
+                  <label for="id_category_name" class="form-label">Категория *</label>
+                  {{ form.category_name }}
+                  <div class="invalid-feedback">
+                    Пожалуйста, укажите категорию
+                  </div>
+                </div>
+
+                <div class="col-12">
+                  <label for="id_description" class="form-label">Описание *</label>
+                  {{ form.description }}
+                  <div class="invalid-feedback">
+                    Пожалуйста, добавьте описание дизайна
+                  </div>
+                </div>
+
+                <div class="col-md-6">
+                  <label for="id_price" class="form-label">Цена (₸) *</label>
+                  <div class="input-group">
+                    {{ form.price }}
+                    <span class="input-group-text">₸</span>
+                    <div class="invalid-feedback">
+                      Пожалуйста, укажите цену товара
+                    </div>
+                  </div>
+                  <div class="form-text">
+                    Мы рекомендуем устанавливать цену от 5,000 до 15,000 ₸.
+                  </div>
+                </div>
+
+                <div class="col-md-6">
+                  <label for="id_tags" class="form-label">Ключевые слова</label>
+                  {{ form.tags }}
+                  <div class="form-text">
+                    Разделяйте ключевые слова запятыми (например: природа, горы, Казахстан)
+                  </div>
+                </div>
+
+                <div class="col-12">
+                  <label for="id_available_colors" class="form-label">Доступные цвета футболок *</label>
+                  {{ form.available_colors }}
+                  <div class="form-text">
+                    Разделяйте цвета запятыми (например: black,white,red,blue)
+                  </div>
+                </div>
+
+                <!-- Hidden fields -->
+                {{ form.design_position }}
+
+                <!-- Image upload -->
+                <div class="col-12">
+                  <label class="form-label">Изображение дизайна *</label>
+                  <div class="image-upload-container">
+                    <div class="row align-items-center">
+                      <div class="col-lg-6">
+                        <div class="upload-box mb-4 mb-lg-0">
+                          <label for="id_image" class="upload-label">
+                            <div
+                              class="upload-placeholder text-center p-5"
+                              id="upload-placeholder"
+                            >
+                              <i
+                                class="fas fa-cloud-upload-alt fa-3x mb-3 text-primary"
+                              ></i>
+                              <h5>Перетащите файл или нажмите для выбора</h5>
+                              <p class="text-muted small mb-0">
+                                PNG, JPG, SVG, GIF • Макс. 5MB
+                              </p>
+                            </div>
+                            <div
+                              id="imagePreview"
+                              class="preview-container d-none"
+                            >
+                              <img
+                                id="preview"
+                                src="#"
+                                alt="Предпросмотр изображения"
+                                class="img-fluid"
+                              />
+                              <div class="preview-overlay">
+                                <button
+                                  type="button"
+                                  class="btn btn-danger btn-sm"
+                                  id="removeImage"
+                                >
+                                  <i class="fas fa-trash"></i>
+                                </button>
+                              </div>
+                            </div>
+                            {{ form.image }}
+                          </label>
+                          <div class="invalid-feedback">
+                            Пожалуйста, загрузите изображение дизайна
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-lg-6">
+                        <h5 class="mb-3">Требования к изображению:</h5>
+                        <ul class="list-unstyled">
+                          <li class="mb-2">
+                            <i
+                              class="fas fa-check-circle text-success me-2"
+                            ></i>
+                            Разрешение: минимум 1200x1200 пикс.
+                          </li>
+                          <li class="mb-2">
+                            <i
+                              class="fas fa-check-circle text-success me-2"
+                            ></i>
+                            Формат: PNG или JPG (для прозрачного фона
+                            используйте PNG)
+                          </li>
+                          <li class="mb-2">
+                            <i
+                              class="fas fa-check-circle text-success me-2"
+                            ></i>
+                            Размер файла: до 5 МБ
+                          </li>
+                          <li class="mb-2">
+                            <i
+                              class="fas fa-check-circle text-success me-2"
+                            ></i>
+                            Четкое изображение без размытия и пикселизации
+                          </li>
+                          <li>
+                            <i
+                              class="fas fa-check-circle text-success me-2"
+                            ></i>
+                            Дизайн должен соответствовать правилам платформы
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Submit section -->
+                <div class="col-12 mt-4">
+                  <div
+                    class="d-flex flex-column flex-sm-row gap-3 justify-content-end"
+                  >
+                    <a
+                      href="{% url 'index' %}"
+                      class="btn btn-outline-secondary btn-lg"
+                      >Отмена</a
+                    >
+                    <button type="submit" class="btn btn-primary btn-lg">
+                      <i class="fas fa-cloud-upload-alt me-2"></i>Опубликовать
+                      дизайн
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sidebar -->
+      <div class="col-lg-4">
+        <div class="card border-0 shadow-sm mb-4">
+          <div class="card-header bg-primary text-white py-3">
+            <h5 class="mb-0">
+              <i class="fas fa-lightbulb me-2"></i>Как это работает
+            </h5>
+          </div>
+          <div class="card-body p-4">
+            <div class="d-flex mb-4">
+              <div class="step-number me-3">
+                <span
+                  class="badge bg-primary rounded-circle d-flex align-items-center justify-content-center"
+                  style="width: 30px; height: 30px"
+                  >1</span
+                >
+              </div>
+              <div>
+                <h5>Создайте дизайн</h5>
+                <p class="text-muted">
+                  Загрузите свое изображение, добавьте описание и установите
+                  цену.
+                </p>
+              </div>
+            </div>
+            <div class="d-flex mb-4">
+              <div class="step-number me-3">
+                <span
+                  class="badge bg-primary rounded-circle d-flex align-items-center justify-content-center"
+                  style="width: 30px; height: 30px"
+                  >2</span
+                >
+              </div>
+              <div>
+                <h5>Дождитесь одобрения</h5>
+                <p class="text-muted">
+                  Наша команда проверит ваш дизайн в течение 1-2 рабочих дней.
+                </p>
+              </div>
+            </div>
+            <div class="d-flex">
+              <div class="step-number me-3">
+                <span
+                  class="badge bg-primary rounded-circle d-flex align-items-center justify-content-center"
+                  style="width: 30px; height: 30px"
+                  >3</span
+                >
+              </div>
+              <div>
+                <h5>Начните зарабатывать</h5>
+                <p class="text-muted">
+                  После одобрения ваш дизайн появится в магазине и будет
+                  доступен для покупки.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card border-0 shadow-sm">
+          <div class="card-header bg-success text-white py-3">
+            <h5 class="mb-0">
+              <i class="fas fa-star me-2"></i>Советы для успешных продаж
+            </h5>
+          </div>
+          <div class="card-body p-4">
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item px-0 border-0">
+                <i class="fas fa-check-circle text-success me-2"></i>
+                <strong>Качественные изображения:</strong> Используйте
+                высококачественные изображения
+              </li>
+              <li class="list-group-item px-0 border-0">
+                <i class="fas fa-check-circle text-success me-2"></i>
+                <strong>Уникальность:</strong> Создавайте оригинальные дизайны,
+                которые выделяются
+              </li>
+              <li class="list-group-item px-0 border-0">
+                <i class="fas fa-check-circle text-success me-2"></i>
+                <strong>Целевая аудитория:</strong> Подумайте о том, кто будет
+                покупать ваш дизайн
+              </li>
+              <li class="list-group-item px-0 border-0">
+                <i class="fas fa-check-circle text-success me-2"></i>
+                <strong>Оптимальная цена:</strong> Установите
+                конкурентоспособную цену для вашей аудитории
+              </li>
+              <li class="list-group-item px-0 border-0">
+                <i class="fas fa-check-circle text-success me-2"></i>
+                <strong>Продвижение:</strong> Расскажите о своих товарах в
+                социальных сетях
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %} 
+
+{% block scripts %}
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    // Form validation
+    const form = document.querySelector(".needs-validation");
+    if (form) {
+      form.addEventListener("submit", function (event) {
+        if (!form.checkValidity()) {
+          event.preventDefault();
+          event.stopPropagation();
+        }
+        form.classList.add("was-validated");
+      });
+    }
+
+    // Handle drag and drop file upload
+    const uploadBox = document.querySelector(".upload-box");
+    const fileInput = document.getElementById("id_image");
+    const preview = document.getElementById("preview");
+    const imagePreview = document.getElementById("imagePreview");
+    const uploadPlaceholder = document.getElementById("upload-placeholder");
+    const removeButton = document.getElementById("removeImage");
+    const designPositionInput = document.getElementById("id_design_position");
+
+    // Set default design position (centered)
+    if (designPositionInput && !designPositionInput.value) {
+      designPositionInput.value = JSON.stringify({
+        left: "50%",
+        top: "50%",
+        width: "200px",
+        height: "200px",
+        transform: "translate(-50%, -50%)"
+      });
+    }
+
+    if (
+      uploadBox &&
+      fileInput &&
+      preview &&
+      imagePreview &&
+      uploadPlaceholder &&
+      removeButton
+    ) {
+      // Highlight drop area on drag over
+      ["dragenter", "dragover"].forEach((eventName) => {
+        uploadBox.addEventListener(eventName, (e) => {
+          e.preventDefault();
+          uploadBox.classList.add("highlight");
+        });
+      });
+
+      ["dragleave", "drop"].forEach((eventName) => {
+        uploadBox.addEventListener(eventName, (e) => {
+          e.preventDefault();
+          uploadBox.classList.remove("highlight");
+        });
+      });
+
+      // Handle drop event
+      uploadBox.addEventListener("drop", (e) => {
+        e.preventDefault();
+        if (e.dataTransfer.files.length) {
+          fileInput.files = e.dataTransfer.files;
+          updatePreview(e.dataTransfer.files[0]);
+        }
+      });
+
+      // Click to select file
+      uploadBox.addEventListener("click", () => {
+        fileInput.click();
+      });
+
+      // Handle file selection
+      fileInput.addEventListener("change", function (e) {
+        if (this.files && this.files[0]) {
+          updatePreview(this.files[0]);
+        }
+      });
+
+      // Remove image
+      removeButton.addEventListener("click", function (e) {
+        e.stopPropagation();
+        fileInput.value = "";
+        imagePreview.classList.add("d-none");
+        uploadPlaceholder.classList.remove("d-none");
+        if (form) form.classList.remove("was-validated");
+      });
+
+      // Update image preview
+      function updatePreview(file) {
+        const reader = new FileReader();
+
+        reader.onload = function (e) {
+          preview.src = e.target.result;
+          imagePreview.classList.remove("d-none");
+          uploadPlaceholder.classList.add("d-none");
+        };
+
+        reader.readAsDataURL(file);
+      }
+    }
+  });
+</script>
+{% endblock %}

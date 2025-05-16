@@ -1,11 +1,11 @@
-{% extends "base/base.html" %} {% load static %} {% block title %}Creator Login
+{% extends "base/base.html" %} {% load static %} {% block title %}Вход в аккаунт покупателя
 - onerai{% endblock %} {% block content %}
 <div class="container py-5">
   <div class="row justify-content-center">
     <div class="col-md-6">
       <div class="card shadow-sm">
         <div class="card-body p-4">
-          <h2 class="text-center mb-4">Вход для создателей</h2>
+          <h2 class="text-center mb-4">Вход в аккаунт покупателя</h2>
 
           {% if messages %}
           <div class="messages mb-4">
@@ -18,6 +18,9 @@
           <form method="post" class="needs-validation" novalidate>
             {% csrf_token %}
             <input type="hidden" name="next" value="{{ next }}" />
+            <div class="alert alert-info mb-4">
+              <i class="fas fa-info-circle me-2"></i>Это вход для покупателей магазина. Если вы хотите создавать и продавать дизайны, пожалуйста, <a href="https://partners.onerai.kz" class="alert-link">войдите как создатель</a>.
+            </div>
             {% for field in form %}
             <div class="mb-3">
               <label for="{{ field.id_for_label }}" class="form-label"
@@ -39,7 +42,7 @@
           <div class="text-center mt-4">
             <p class="mb-0">
               Нет аккаунта?
-              <a href="{% url 'creators:register' %}{% if next %}?next={{ next }}{% endif %}">Зарегистрироваться</a>
+              <a href="{% url 'store:register' %}{% if next %}?next={{ next }}{% endif %}">Зарегистрироваться</a>
             </p>
           </div>
         </div>
