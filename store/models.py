@@ -150,16 +150,18 @@ class OrderItem(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     size = models.CharField(max_length=10)
     color = models.CharField(max_length=20)
+    quantity = models.PositiveIntegerField(default=1)
     price = models.DecimalField(max_digits=10, decimal_places=2)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.product.name} - {self.size}, {self.color}"
+        return f"{self.product.name} - {self.size}, {self.color} (x{self.quantity})"
+
+    def get_total_price(self):
+        return self.price * self.quantity
 
 
-# Add is_creator and designs_count to User model
-User.add_to_class("is_creator", models.BooleanField(default=False))
-User.add_to_class("designs_count", models.IntegerField(default=0))
+# Add profile image to User model
 User.add_to_class(
     "profile_image", models.ImageField(upload_to="profiles/", blank=True, null=True)
 )

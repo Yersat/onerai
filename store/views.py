@@ -3,8 +3,9 @@ import base64
 import uuid
 import json
 from django.shortcuts import render, get_object_or_404, redirect
-from django.contrib.auth import get_user_model
+from django.contrib.auth import get_user_model, login, authenticate, logout
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import AuthenticationForm
 from django.contrib import messages
 from django.core.exceptions import PermissionDenied
 from django.utils.text import slugify
@@ -14,7 +15,7 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from .models import Product, Category, ShippingAddress, Order, OrderItem, ProductRenderedImage
-from .forms import ShippingAddressForm
+from .forms import ShippingAddressForm, StoreUserRegistrationForm
 from .render_utils import create_rendered_product_images, render_design_on_tshirt
 
 User = get_user_model()
@@ -33,15 +34,9 @@ def index(request):
     # Get all categories
     categories = Category.objects.all()[:6]
 
-    # Get featured creators (users with most designs)
-    featured_creators = User.objects.filter(is_creator=True).order_by("-designs_count")[
-        :4
-    ]
-
     context = {
         "featured_products": featured_products,
         "categories": categories,
-        "featured_creators": featured_creators,
     }
 
     return render(request, "store/index.html", context)
@@ -89,35 +84,7 @@ def product_detail(request, product_id):
     return render(request, "store/product_detail.html", {"product": product})
 
 
-def creator_list(request):
-    creators = User.objects.filter(is_creator=True).order_by("-designs_count")
-    return render(request, "store/creator_list.html", {"creators": creators})
 
-
-def creator_profile(request, username):
-    creator = get_object_or_404(User, username=username, is_creator=True)
-
-    # If viewing own profile or admin, show all products including pending/rejected
-    if request.user.is_authenticated and (request.user.username == username or request.user.is_staff):
-        products = creator.products.filter(is_active=True)
-        is_own_profile = True
-    else:
-        # For other users, only show approved products
-        products = creator.products.filter(
-            is_active=True,
-            approval_status=Product.STATUS_APPROVED
-        )
-        is_own_profile = False
-
-    return render(
-        request,
-        "store/creator_profile.html",
-        {
-            "creator": creator,
-            "products": products,
-            "is_own_profile": is_own_profile
-        },
-    )
 
 
 def category_products(request, slug):
@@ -143,6 +110,7 @@ def cart(request):
         product_id = request.POST.get('product_id')
         selected_size = request.POST.get('selected_size')
         selected_color = request.POST.get('selected_color')
+        quantity = int(request.POST.get('quantity', 1))  # Default to 1 if not provided
 
         if product_id and selected_size and selected_color:
             try:
@@ -153,33 +121,75 @@ def cart(request):
                 if 'cart' not in request.session:
                     request.session['cart'] = []
 
-                # Add item to cart
-                cart_item = {
-                    'product_id': product_id,
-                    'size': selected_size,
-                    'color': selected_color
-                }
+                # Check if the same product with same size and color already exists in cart
+                found = False
+                for item in request.session['cart']:
+                    if (item['product_id'] == product_id and
+                        item['size'] == selected_size and
+                        item['color'] == selected_color):
+                        # Update quantity instead of adding a new item
+                        item['quantity'] = item.get('quantity', 1) + quantity
+                        found = True
+                        break
 
-                request.session['cart'].append(cart_item)
+                if not found:
+                    # Add new item to cart
+                    cart_item = {
+                        'product_id': product_id,
+                        'size': selected_size,
+                        'color': selected_color,
+                        'quantity': quantity
+                    }
+                    request.session['cart'].append(cart_item)
+
                 request.session.modified = True
-
                 messages.success(request, f"{product.name} добавлен в корзину")
             except Exception as e:
                 messages.error(request, f"Ошибка при добавлении товара в корзину: {str(e)}")
+
+    # Handle quantity updates
+    elif request.method == "GET" and request.GET.get('action') == 'update_quantity':
+        item_index = int(request.GET.get('item_index', -1))
+        new_quantity = int(request.GET.get('quantity', 1))
+
+        if item_index >= 0 and 'cart' in request.session and item_index < len(request.session['cart']):
+            if new_quantity > 0:
+                # Update quantity
+                request.session['cart'][item_index]['quantity'] = new_quantity
+                request.session.modified = True
+                messages.success(request, "Количество товара обновлено")
+            else:
+                # Remove item if quantity is 0
+                product_id = request.session['cart'][item_index]['product_id']
+                try:
+                    product = Product.objects.get(id=product_id)
+                    product_name = product.name
+                except Product.DoesNotExist:
+                    product_name = "Товар"
+
+                request.session['cart'].pop(item_index)
+                request.session.modified = True
+                messages.success(request, f"{product_name} удален из корзины")
+
+        # Redirect back to cart to prevent form resubmission
+        return redirect('store:cart')
 
     # Get cart items from session
     if 'cart' in request.session and request.session['cart']:
         for index, item in enumerate(request.session['cart']):
             try:
                 product = Product.objects.get(id=item['product_id'], is_active=True, approval_status=Product.STATUS_APPROVED)
+                quantity = item.get('quantity', 1)  # Default to 1 for backward compatibility
+
                 cart_item = {
                     'product': product,
                     'size': item['size'],
                     'color': item['color'],
+                    'quantity': quantity,
                     'index': index  # Add index for removal
                 }
                 cart_items.append(cart_item)
-                total_price += float(product.price)
+                total_price += float(product.price) * quantity
             except Product.DoesNotExist:
                 # Remove invalid products from cart
                 request.session['cart'].remove(item)
@@ -193,24 +203,7 @@ def cart(request):
     return render(request, "store/cart.html", context)
 
 
-@login_required
-def my_designs(request):
-    """View for creators to see all their designs with approval status"""
-    products = Product.objects.filter(creator=request.user).order_by('-created_at')
 
-    # Count products by status
-    pending_count = products.filter(approval_status=Product.STATUS_PENDING).count()
-    approved_count = products.filter(approval_status=Product.STATUS_APPROVED).count()
-    rejected_count = products.filter(approval_status=Product.STATUS_REJECTED).count()
-
-    context = {
-        'products': products,
-        'pending_count': pending_count,
-        'approved_count': approved_count,
-        'rejected_count': rejected_count,
-    }
-
-    return render(request, "store/my_designs.html", context)
 
 
 @login_required
@@ -267,11 +260,6 @@ def add_product(request):
             # Perform server-side rendering for all selected colors
             create_rendered_product_images(product, available_colors_list)
 
-            # Update user's designs count
-            request.user.designs_count += 1
-            request.user.is_creator = True
-            request.user.save()
-
             # Success message is now shown on the confirmation page
             return redirect('store:submission_confirmation', product_id=product.id)
 
@@ -297,14 +285,16 @@ def checkout(request):
     for index, item in enumerate(request.session['cart']):
         try:
             product = Product.objects.get(id=item['product_id'], is_active=True, approval_status=Product.STATUS_APPROVED)
+            quantity = item.get('quantity', 1)  # Default to 1 for backward compatibility
             cart_item = {
                 'product': product,
                 'size': item['size'],
                 'color': item['color'],
+                'quantity': quantity,
                 'index': index
             }
             cart_items.append(cart_item)
-            total_price += float(product.price)
+            total_price += float(product.price) * quantity
         except Product.DoesNotExist:
             # Remove invalid products from cart
             request.session['cart'].remove(item)
@@ -370,6 +360,7 @@ def checkout(request):
                 product=item['product'],
                 size=item['size'],
                 color=item['color'],
+                quantity=item['quantity'],
                 price=item['product'].price
             )
 
@@ -423,6 +414,62 @@ def remove_from_cart(request, item_index):
 
     # Redirect back to cart
     return redirect("store:cart")
+
+
+@login_required
+def customer_profile(request):
+    """View for customer profile page"""
+    # Get user's orders
+    orders = Order.objects.filter(user=request.user).order_by('-created_at')
+
+    # Get user's shipping addresses
+    shipping_addresses = ShippingAddress.objects.filter(user=request.user).order_by('-is_default')
+
+    context = {
+        'user': request.user,
+        'orders': orders,
+        'shipping_addresses': shipping_addresses,
+    }
+
+    return render(request, "store/customer_profile.html", context)
+
+
+def login_store_user(request):
+    """View for store user login"""
+    if request.method == "POST":
+        form = AuthenticationForm(data=request.POST)
+        if form.is_valid():
+            username = form.cleaned_data.get("username")
+            password = form.cleaned_data.get("password")
+            user = authenticate(username=username, password=password)
+            if user is not None:
+                login(request, user)
+                messages.success(request, f"Добро пожаловать, {user.get_full_name()}!")
+                # Get the next parameter or default to home
+                next_url = request.POST.get("next") or request.GET.get("next")
+                if next_url:
+                    return redirect(next_url)
+                return redirect("store:index")
+    else:
+        form = AuthenticationForm()
+    return render(request, "store/login.html", {"form": form, "next": request.GET.get("next", "")})
+
+
+def register_store_user(request):
+    """View for store user registration"""
+    if request.method == "POST":
+        form = StoreUserRegistrationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            messages.success(request, "Регистрация успешна! Добро пожаловать в onerai.")
+            next_url = request.POST.get("next") or request.GET.get("next")
+            if next_url:
+                return redirect(next_url)
+            return redirect("store:index")
+    else:
+        form = StoreUserRegistrationForm()
+    return render(request, "store/register.html", {"form": form})
 
 
 @csrf_exempt
@@ -498,3 +545,10 @@ def render_design_api(request):
         return JsonResponse({'error': 'Invalid JSON'}, status=400)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
+
+
+def logout_view(request):
+    """Custom view for handling user logout that accepts GET requests"""
+    logout(request)
+    messages.success(request, "Вы успешно вышли из аккаунта.")
+    return redirect("store:index")
