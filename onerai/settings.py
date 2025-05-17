@@ -142,4 +142,4 @@ DATA_UPLOAD_MAX_MEMORY_SIZE = 52428800  # 50MB
 FILE_UPLOAD_MAX_MEMORY_SIZE = 52428800  # 50MB
 
 # API settings
-API_KEY = 'your_secret_api_key'  # Must match the key in the partners_onerai project
+API_KEY = 'onerai_partners_api_key_2024'  # Must match the key in the partners_onerai project
