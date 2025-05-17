@@ -1,0 +1,178 @@
+/* 
+ * Categories Section Styles
+ * This file contains styles ONLY for the categories section
+ * It uses unique class names to avoid conflicts with other styles
+ */
+
+/* Main container */
+.kz-category-section {
+  background-color: #1a2530;
+  padding: 5rem 0;
+  color: white;
+  margin-bottom: 0;
+}
+
+.kz-category-section .kz-container {
+  max-width: 1140px;
+  padding: 0 15px;
+  margin: 0 auto;
+}
+
+.kz-category-section .kz-section-title {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.kz-category-section .kz-section-title h2 {
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  color: white;
+  font-size: 2rem;
+}
+
+.kz-category-section .kz-section-title p {
+  margin-bottom: 0;
+  color: #a0aec0;
+  font-size: 1.1rem;
+}
+
+/* Grid layout for categories */
+.kz-category-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px;
+  margin-bottom: 3rem;
+}
+
+/* Category card */
+.kz-category-card {
+  position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: #2c3e50;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  height: 0;
+  padding-bottom: 100%; /* Creates a square aspect ratio */
+}
+
+.kz-category-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+}
+
+.kz-category-link {
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  text-decoration: none;
+  color: white;
+}
+
+.kz-category-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  transition: transform 0.5s ease;
+}
+
+.kz-category-card:hover .kz-category-image {
+  transform: scale(1.05);
+}
+
+.kz-category-name {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 1rem;
+  font-weight: 600;
+  font-size: 1.1rem;
+  text-align: center;
+  color: white;
+  background-color: rgba(0, 0, 0, 0.7);
+  margin: 0;
+  z-index: 2;
+  backdrop-filter: blur(2px);
+}
+
+/* View all button */
+.kz-view-all {
+  text-align: center;
+  margin-top: 2rem;
+}
+
+.kz-view-all-btn {
+  display: inline-block;
+  padding: 0.75rem 2rem;
+  font-weight: 600;
+  font-size: 1rem;
+  color: white;
+  background-color: transparent;
+  border: 2px solid white;
+  border-radius: 4px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.kz-view-all-btn:hover {
+  background-color: #3498db;
+  border-color: #3498db;
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+  color: white;
+  text-decoration: none;
+}
+
+.kz-view-all-btn i {
+  margin-right: 0.5rem;
+}
+
+/* Responsive styles */
+@media (max-width: 991.98px) {
+  .kz-category-grid {
+    gap: 20px;
+  }
+}
+
+@media (max-width: 767.98px) {
+  .kz-category-section {
+    padding: 3rem 0;
+  }
+  
+  .kz-category-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+  }
+  
+  .kz-category-name {
+    font-size: 1rem;
+    padding: 0.75rem;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .kz-category-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .kz-category-section .kz-section-title h2 {
+    font-size: 1.75rem;
+  }
+  
+  .kz-category-section .kz-section-title p {
+    font-size: 1rem;
+  }
+  
+  .kz-view-all-btn {
+    width: 100%;
+    display: block;
+  }
+}

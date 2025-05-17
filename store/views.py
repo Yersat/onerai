@@ -31,11 +31,18 @@ def index(request):
         approval_status=Product.STATUS_APPROVED
     )[:8]
 
+    # Get recent products (only approved ones)
+    recent_products = Product.objects.filter(
+        is_active=True,
+        approval_status=Product.STATUS_APPROVED
+    ).order_by('-created_at')[:8]  # Limit to 8 most recent products
+
     # Get all categories
     categories = Category.objects.all()[:6]
 
     context = {
         "featured_products": featured_products,
+        "recent_products": recent_products,
         "categories": categories,
     }
 

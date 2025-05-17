@@ -1,5 +1,6 @@
 {% extends 'base/base.html' %}
 {% load static %}
+{% load store_tags %}
 {% block title %}Корзина{% endblock %}
 {% block content %}
 <!-- Cart header -->
@@ -48,14 +49,21 @@
                       <div class="d-flex align-items-center">
                         <a href="{% url 'store:product_detail' item.product.id %}" class="cart-item-img me-3">
                           {% if item.color %}
-                          <img src="{% static 'img/tshirt-mockups/tshirt-' %}{{ item.color }}.png" alt="{{ item.product.name }}" class="img-fluid tshirt-preview">
-                          <div class="design-overlay">
-                            <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="design-image">
-                          </div>
+                            {% get_matching_rendered_image item.product.rendered_images.all item.color as matching_image %}
+                            {% if matching_image %}
+                              <img src="{{ matching_image.image.url }}" alt="{{ item.product.name }}" class="img-fluid">
+                            {% elif item.product.rendered_image %}
+                              <img src="{{ item.product.rendered_image.url }}" alt="{{ item.product.name }}" class="img-fluid">
+                            {% else %}
+                              <img src="{% static 'img/tshirt-mockups/tshirt-' %}{{ item.color }}.png" alt="{{ item.product.name }}" class="img-fluid tshirt-preview">
+                              <div class="design-overlay">
+                                <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="design-image">
+                              </div>
+                            {% endif %}
                           {% elif item.product.rendered_image %}
-                          <img src="{{ item.product.rendered_image.url }}" alt="{{ item.product.name }}" class="img-fluid">
+                            <img src="{{ item.product.rendered_image.url }}" alt="{{ item.product.name }}" class="img-fluid">
                           {% else %}
-                          <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="img-fluid">
+                            <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="img-fluid">
                           {% endif %}
                         </a>
                         <div>

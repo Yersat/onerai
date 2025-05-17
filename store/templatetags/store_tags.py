@@ -24,3 +24,26 @@ def multiply(value, arg):
         return Decimal(str(value)) * Decimal(str(arg))
     except (ValueError, TypeError):
         return 0
+
+@register.filter
+def call_with_arg(obj, arg):
+    """
+    Call a method on an object with the given argument.
+    Usage: {{ object|call_with_arg:"method_name:argument" }}
+    """
+    method_name, arg_value = arg.split(':')
+    if hasattr(obj, method_name):
+        method = getattr(obj, method_name)
+        return method(arg_value)
+    return None
+
+@register.simple_tag
+def get_matching_rendered_image(rendered_images, color):
+    """
+    Find the first rendered image that matches the given color.
+    Usage: {% get_matching_rendered_image product.rendered_images.all item.color as matching_image %}
+    """
+    for image in rendered_images:
+        if image.color == color:
+            return image
+    return None

@@ -1,12 +1,7 @@
 {% extends "base/base.html" %} {% load static %} {% block title %} onerai. |
 Главная{% endblock %} {% block content %}
 <!-- Hero section -->
-<section
-  class="hero-section"
-  style="
-    background-image: url('https://images.unsplash.com/photo-1523381294911-8d3cead13475?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2000&q=80');
-  "
->
+<section class="hero-section">
   <div class="container">
     <div class="row">
       <div class="col-lg-6 hero-content">
@@ -19,7 +14,7 @@
         </p>
         <div class="hero-buttons">
           <a
-            href="https://partners.onerai.kz"
+            href="https://partners.onerai.kz/accounts/signup/"
             class="btn btn-primary btn-lg me-2 mb-2 mb-md-0"
           >
             <i class="fas fa-plus-circle me-2"></i>Создать дизайн
@@ -86,66 +81,53 @@
   </div>
 </section>
 
-<!-- Categories section -->
-<section class="py-5 bg-dark">
-  <div class="container">
-    <div class="text-center mb-5">
-      <h2 class="fw-bold">Популярные категории</h2>
-      <p class="lead">Выберите категорию продукта для вашего дизайна</p>
+<!-- Categories section with completely new class names -->
+<section class="kz-category-section" style="margin-top: 0; margin-bottom: 0;">
+  <div class="kz-container">
+    <div class="kz-section-title">
+      <h2>Популярные категории</h2>
+      <p>Выберите категорию продукта для вашего дизайна</p>
     </div>
 
-    <div class="row g-4">
-      <div class="col-md-4">
-        <a
-          href="{% url 'store:products' %}?category=Футболки"
-          class="text-decoration-none"
-        >
-          <div class="category-item">
-            <img
-              src="https://images.unsplash.com/photo-1576566588028-4147f3842f27?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=700&q=80"
-              alt="Футболки"
-              class="img-fluid"
-            />
-            <div class="category-name text-center">Футболки</div>
-          </div>
+    <div class="kz-category-grid">
+      <div class="kz-category-card">
+        <a href="{% url 'store:products' %}?category=Футболки" class="kz-category-link">
+          <img
+            src="https://images.unsplash.com/photo-1576566588028-4147f3842f27?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=700&q=80"
+            alt="Футболки"
+            class="kz-category-image"
+          />
+          <div class="kz-category-name">Футболки</div>
         </a>
       </div>
-      <div class="col-md-4">
-        <a
-          href="{% url 'store:products' %}?category=Худи"
-          class="text-decoration-none"
-        >
-          <div class="category-item">
-            <img
-              src="https://images.unsplash.com/photo-1556821840-3a63f95609a7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=700&q=80"
-              alt="Худи"
-              class="img-fluid"
-            />
-            <div class="category-name text-center">Худи</div>
-          </div>
+
+      <div class="kz-category-card">
+        <a href="{% url 'store:products' %}?category=Худи" class="kz-category-link">
+          <img
+            src="https://images.unsplash.com/photo-1556821840-3a63f95609a7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=700&q=80"
+            alt="Худи"
+            class="kz-category-image"
+          />
+          <div class="kz-category-name">Худи</div>
         </a>
       </div>
-      <div class="col-md-4">
-        <a
-          href="{% url 'store:products' %}?category=Аксессуары"
-          class="text-decoration-none"
-        >
-          <div class="category-item">
-            <img
-              src="https://images.unsplash.com/photo-1589810635657-232948472d98?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=700&q=80"
-              alt="Аксессуары"
-              class="img-fluid"
-            />
-            <div class="category-name text-center">Аксессуары</div>
-          </div>
+
+      <div class="kz-category-card">
+        <a href="{% url 'store:products' %}?category=Аксессуары" class="kz-category-link">
+          <img
+            src="https://images.unsplash.com/photo-1589810635657-232948472d98?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=700&q=80"
+            alt="Аксессуары"
+            class="kz-category-image"
+          />
+          <div class="kz-category-name">Аксессуары</div>
         </a>
       </div>
     </div>
 
-    <div class="text-center mt-5">
-      <a href="{% url 'store:products' %}" class="btn btn-outline-light btn-lg"
-        >Все категории</a
-      >
+    <div class="kz-view-all">
+      <a href="{% url 'store:products' %}" class="kz-view-all-btn">
+        <i class="fas fa-th-large"></i>Все категории
+      </a>
     </div>
   </div>
 </section>
@@ -239,7 +221,7 @@
             Пока нет доступных товаров. Станьте первым, кто добавит свой
             уникальный дизайн!
           </p>
-          <a href="https://partners.onerai.kz" class="btn btn-primary mt-3"
+          <a href="https://partners.onerai.kz/accounts/signup/" class="btn btn-primary mt-3"
             >Добавить товар</a
           >
         </div>
@@ -292,7 +274,7 @@
             Казахстану, которые ищут уникальные дизайнерские товары.
           </p>
         </div>
-        <a href="https://partners.onerai.kz" class="btn btn-primary btn-lg"
+        <a href="https://partners.onerai.kz/accounts/signup/" class="btn btn-primary btn-lg"
           >Начать сейчас</a
         >
       </div>
@@ -300,7 +282,7 @@
       <div class="col-lg-6 mt-5 mt-lg-0">
         <div class="ratio ratio-16x9 h-100">
           <iframe
-            src="https://www.youtube.com/embed/dQw4w9WgXcQ"
+            src="https://www.youtube.com/embed/jUphIvji3nw"
             title="Как работает печать по требованию"
             allowfullscreen
           ></iframe>
@@ -332,7 +314,7 @@
             <div>5.0</div>
           </div>
           <p class="mb-4">
-            «Я начинающий дизайнер, и Модный Принт помог мне запустить свой
+            «Я начинающий дизайнер, и onerai помог мне запустить свой
             бренд без огромных вложений. Качество печати отличное, клиенты
             довольны!»
           </p>
@@ -366,7 +348,7 @@
             <div>4.5</div>
           </div>
           <p class="mb-4">
-            «Очень доволен сотрудничеством с Модный Принт. Процесс загрузки
+            «Очень доволен сотрудничеством с onerai. Процесс загрузки
             дизайна интуитивно понятен, а поддержка всегда готова помочь.
             Рекомендую!»
           </p>
@@ -381,7 +363,7 @@
             </div>
             <div>
               <h5 class="mb-0">Дина Н.</h5>
-              <p class="small mb-0">Иллюстратор, Нур-Султан</p>
+              <p class="small mb-0">Иллюстратор, Астана</p>
             </div>
           </div>
         </div>
@@ -413,7 +395,7 @@
               </div>
             </div>
             <div>
-              <h5 class="mb-0">Марат Т.</h5>
+              <h5 class="mb-0">Мария Т.</h5>
               <p class="small mb-0">Покупатель, Караганда</p>
             </div>
           </div>
@@ -435,7 +417,7 @@
         </p>
       </div>
       <div class="col-lg-4 text-center text-lg-end mt-4 mt-lg-0">
-        <a href="https://partners.onerai.kz" class="btn btn-light btn-lg"
+        <a href="https://partners.onerai.kz/accounts/signup/" class="btn btn-light btn-lg"
           >Загрузить дизайн сейчас</a
         >
       </div>

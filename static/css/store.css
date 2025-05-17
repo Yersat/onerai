@@ -310,6 +310,174 @@
   color: #9ca3af;
 }
 
+/* Category section styles - completely rewritten */
+.category-section {
+  background-color: #1a2530 !important;
+  padding: 5rem 0 !important;
+  color: white !important;
+  margin-bottom: 0 !important;
+}
+
+.category-section .container {
+  max-width: 1140px !important;
+  padding: 0 15px !important;
+  margin: 0 auto !important;
+}
+
+.category-section h2 {
+  font-weight: 700 !important;
+  margin-bottom: 0.5rem !important;
+  color: white !important;
+}
+
+.category-section p.lead {
+  margin-bottom: 2.5rem !important;
+  color: #a0aec0 !important;
+}
+
+.category-section .row.g-4 {
+  display: grid !important;
+  grid-template-columns: repeat(3, 1fr) !important;
+  gap: 24px !important;
+  margin: 0 !important;
+}
+
+.category-section .col-md-4 {
+  width: 100% !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.category-section a.text-decoration-none {
+  display: block !important;
+  width: 100% !important;
+  text-decoration: none !important;
+}
+
+.category-item {
+  position: relative !important;
+  border-radius: 8px !important;
+  overflow: hidden !important;
+  background-color: #2c3e50 !important;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2) !important;
+  transition: transform 0.3s ease, box-shadow 0.3s ease !important;
+  aspect-ratio: 1/1 !important; /* Force square aspect ratio */
+  display: block !important;
+  width: 100% !important;
+  height: 0 !important;
+  padding-bottom: 100% !important; /* Another way to force square aspect ratio */
+}
+
+.category-item:hover {
+  transform: translateY(-5px) !important;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3) !important;
+}
+
+.category-image-container {
+  position: relative !important;
+  width: 100% !important;
+  height: 100% !important;
+  overflow: hidden !important;
+}
+
+.category-image-container img {
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  object-position: center !important;
+  transition: transform 0.5s ease !important;
+}
+
+.category-item:hover .category-image-container img {
+  transform: scale(1.05) !important;
+}
+
+.category-name {
+  position: absolute !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  padding: 1rem !important;
+  font-weight: 600 !important;
+  font-size: 1.1rem !important;
+  text-align: center !important;
+  color: white !important;
+  background-color: rgba(0, 0, 0, 0.7) !important; /* Semi-transparent overlay */
+  margin: 0 !important;
+  z-index: 2 !important; /* Ensure it appears above the image */
+  backdrop-filter: blur(2px) !important; /* Slight blur effect for modern browsers */
+}
+
+/* Category button styles */
+.category-section .text-center.mt-5 {
+  margin-top: 3rem !important;
+  text-align: center !important;
+}
+
+.category-section .btn-outline-light {
+  border: 2px solid white !important;
+  font-weight: 600 !important;
+  transition: all 0.3s ease !important;
+  padding: 0.75rem 2rem !important;
+  color: white !important;
+  background-color: transparent !important;
+  border-radius: 4px !important;
+  display: inline-block !important;
+}
+
+.category-section .btn-outline-light:hover {
+  background-color: #3498db !important;
+  border-color: #3498db !important;
+  transform: translateY(-3px) !important;
+  box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4) !important;
+}
+
+/* Responsive styles for categories */
+@media (max-width: 991.98px) {
+  .category-section .row.g-4 {
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 20px !important;
+  }
+}
+
+@media (max-width: 767.98px) {
+  .category-section {
+    padding: 3rem 0 !important;
+  }
+
+  .category-section .row.g-4 {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 15px !important;
+  }
+
+  .category-name {
+    font-size: 1rem !important;
+    padding: 0.75rem !important;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .category-section .row.g-4 {
+    grid-template-columns: 1fr !important;
+    gap: 15px !important;
+  }
+
+  .category-section h2 {
+    font-size: 1.75rem !important;
+  }
+
+  .category-section p.lead {
+    font-size: 1rem !important;
+  }
+
+  .category-section .btn-outline-light {
+    width: 100% !important;
+  }
+}
+
 /* Cart page styles */
 .cart-item-img {
   width: 80px;

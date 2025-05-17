@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>{% block title %}Модный Принт | Казахстан{% endblock %}</title>
+    <title>{% block title %} onerai | Казахстан{% endblock %}</title>
     {% load static %}
     <!-- Bootstrap theme for Replit -->
     <link
@@ -27,6 +27,10 @@
     <link rel="stylesheet" href="{% static 'css/forms.css' %}" />
     <link rel="stylesheet" href="{% static 'css/product-designer.css' %}" />
     <link rel="stylesheet" href="{% static 'css/store.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/hero-updated.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/navbar.css' %}" />
+    <!-- Categories specific CSS - loaded last to override any conflicting styles -->
+    <link rel="stylesheet" href="{% static 'css/categories.css' %}" />
     {% block head %}{% endblock %}
     <script>
       document.addEventListener("DOMContentLoaded", function () {
@@ -42,11 +46,10 @@
   </head>
   <body>
     <!-- Top announcement bar -->
-    <div class="announcement-bar py-2 text-center">
+    <div class="announcement-bar text-center">
       <div class="container">
-        <p class="small mb-0">
-          <i class="fas fa-truck-fast me-2"></i> Бесплатная доставка по всему
-          Казахстану при заказе от 15,000 ₸
+        <p>
+          <i class="fas fa-truck-fast"></i> Бесплатная доставка по всему Казахстану при заказе от 15,000 ₸
         </p>
       </div>
     </div>
@@ -54,8 +57,8 @@
     <!-- Main navigation -->
     <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
       <div class="container">
-        <a class="navbar-brand fw-bold" href="{% url 'store:index' %}">
-          <i class="fas fa-tshirt me-2"></i>onerai
+        <a class="navbar-brand" href="{% url 'store:index' %}">
+          <i class="fas fa-tshirt"></i>onerai
         </a>
         <button
           class="navbar-toggler"
@@ -71,20 +74,18 @@
         <div class="collapse navbar-collapse" id="navbarNav">
           <ul class="navbar-nav mx-auto">
             <li class="nav-item">
-              <a class="nav-link px-3" href="{% url 'store:index' %}"
-                >Главная</a
-              >
+              <a class="nav-link" href="{% url 'store:index' %}">ГЛАВНАЯ</a>
             </li>
             <li class="nav-item dropdown">
               <a
-                class="nav-link dropdown-toggle px-3"
+                class="nav-link dropdown-toggle"
                 href="#"
                 id="navbarDropdown"
                 role="button"
                 data-bs-toggle="dropdown"
                 aria-expanded="false"
               >
-                Категории
+                КАТЕГОРИИ
               </a>
               <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                 <li>
@@ -131,16 +132,11 @@
               </ul>
             </li>
             <li class="nav-item">
-              <a class="nav-link px-3" href="{% url 'store:products' %}"
-                >Новинки</a
-              >
+              <a class="nav-link" href="{% url 'store:products' %}">НОВИНКИ</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link px-3" href="https://partners.onerai.kz"
-                >Создать дизайн</a
-              >
+              <a class="nav-link" href="https://partners.onerai.kz/accounts/signup/">СОЗДАТЬ ДИЗАЙН</a>
             </li>
-
           </ul>
           <div class="d-flex align-items-center">
             <form class="d-flex me-3">
@@ -256,7 +252,7 @@
           <div class="col-lg-3 col-md-6 mb-4">
             <h5 class="text-uppercase mb-4">О нас</h5>
             <p>
-              Модный Принт - ведущая платформа печати по требованию в
+              onerai - ведущая платформа печати по требованию в
               Казахстане, помогающая дизайнерам и брендам создавать уникальную
               продукцию без складских затрат.
             </p>
@@ -344,10 +340,10 @@
                 <i class="fas fa-phone-alt me-2"></i> +7 (727) 123-4567
               </li>
               <li class="mb-3">
-                <i class="fas fa-mobile-alt me-2"></i> +7 (777) 890-1234
+                <i class="fas fa-mobile-alt me-2"></i> +7 (701) 960-1017
               </li>
               <li class="mb-3">
-                <i class="fas fa-envelope me-2"></i> info@modnyprint.kz
+                <i class="fas fa-envelope me-2"></i> info@fastdev.org
               </li>
               <li><i class="fas fa-clock me-2"></i> Пн-Пт: 9:00 - 18:00</li>
             </ul>
