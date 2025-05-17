@@ -29,6 +29,7 @@
     <link rel="stylesheet" href="{% static 'css/store.css' %}" />
     <link rel="stylesheet" href="{% static 'css/hero-updated.css' %}" />
     <link rel="stylesheet" href="{% static 'css/navbar.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/footer.css' %}" />
     <!-- Categories specific CSS - loaded last to override any conflicting styles -->
     <link rel="stylesheet" href="{% static 'css/categories.css' %}" />
     {% block head %}{% endblock %}
@@ -355,24 +356,23 @@
             <p class="mb-0">&copy; 2025 onerai. Все права защищены.</p>
           </div>
           <div class="col-md-6 text-md-end">
-            <img
-              src="{% static 'img/mastercard.png' %}"
-              alt="Mastercard"
-              height="25"
-              class="payment-icon me-2"
-            />
-            <img
-              src="{% static 'img/visa.png' %}"
-              alt="Visa"
-              height="25"
-              class="payment-icon me-2"
-            />
-            <img
-              src="{% static 'img/applepay.png' %}"
-              alt="Apple Pay"
-              height="25"
-              class="payment-icon"
-            />
+            <div class="payment-icons-wrapper">
+              <img
+                src="{% static 'img/mastercard.png' %}"
+                alt="Mastercard"
+                class="payment-icon"
+              />
+              <img
+                src="{% static 'img/visa.png' %}"
+                alt="Visa"
+                class="payment-icon"
+              />
+              <img
+                src="{% static 'img/applepay.png' %}"
+                alt="Apple Pay"
+                class="payment-icon"
+              />
+            </div>
           </div>
         </div>
       </div>

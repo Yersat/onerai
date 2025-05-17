@@ -1,0 +1,110 @@
+/*
+ * Footer Styles
+ * This file contains styles for the footer section
+ */
+
+/* Footer section */
+.footer {
+  background-color: #212529;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.footer h5 {
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  color: white;
+}
+
+.footer p {
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.6;
+}
+
+/* Footer links */
+.footer-link {
+  color: rgba(255, 255, 255, 0.7);
+  text-decoration: none;
+  transition: color 0.2s ease;
+  display: inline-block;
+}
+
+.footer-link:hover {
+  color: #3498db;
+  text-decoration: none;
+}
+
+/* Social icons */
+.social-icons {
+  display: flex;
+}
+
+.social-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.1);
+  color: white;
+  transition: all 0.3s ease;
+}
+
+.social-icon:hover {
+  background-color: #3498db;
+  color: white;
+  transform: translateY(-3px);
+}
+
+/* Contact info */
+.contact-info li {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+}
+
+.contact-info i {
+  margin-top: 0.25rem;
+  color: #3498db;
+}
+
+/* Payment icons */
+.payment-icons-wrapper {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.payment-icon {
+  display: inline-block;
+  height: 30px;
+  width: auto;
+  margin-left: 10px;
+  background-color: white;
+  border-radius: 4px;
+  padding: 5px;
+  vertical-align: middle;
+  object-fit: contain;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive adjustments */
+@media (max-width: 767.98px) {
+  .footer h5 {
+    margin-top: 1.5rem;
+  }
+
+  .payment-icons-wrapper {
+    justify-content: center;
+    margin-top: 1rem;
+    width: 100%;
+  }
+
+  .col-md-6.text-md-end {
+    text-align: center !important;
+  }
+
+  .payment-icon {
+    margin: 0 5px;
+  }
+}
