@@ -19,7 +19,7 @@
             {% csrf_token %}
             <input type="hidden" name="next" value="{{ next }}" />
             <div class="alert alert-info mb-4">
-              <i class="fas fa-info-circle me-2"></i>Это вход для покупателей магазина. Если вы хотите создавать и продавать дизайны, пожалуйста, <a href="https://partners.onerai.kz" class="alert-link">войдите как создатель</a>.
+              <i class="fas fa-info-circle me-2"></i>Это вход для покупателей магазина. Если вы хотите создавать и продавать дизайны, пожалуйста, <a href="https://partners.onerai.kz/accounts/login/" class="alert-link">войдите как создатель</a>.
             </div>
             {% for field in form %}
             <div class="mb-3">
