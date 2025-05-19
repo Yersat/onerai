@@ -272,15 +272,17 @@
               ></a>
             </div>
           </div>
-          <div class="col-lg-3 col-md-6 mb-4">
+          <div class="col-lg-2 col-md-6 mb-4">
             <h5 class="text-uppercase mb-4">Помощь</h5>
             <ul class="list-unstyled">
-              <li class="mb-2"><a href="#" class="footer-link">Доставка</a></li>
               <li class="mb-2">
-                <a href="#" class="footer-link">Возврат и обмен</a>
+                <a href="{% url 'store:legal_document' document_name='shipping-policy' %}" class="footer-link">Доставка</a>
               </li>
               <li class="mb-2">
-                <a href="#" class="footer-link">Размерная сетка</a>
+                <a href="{% url 'store:legal_document' document_name='return-policy' %}" class="footer-link">Возврат и обмен</a>
+              </li>
+              <li class="mb-2">
+                <a href="{% url 'store:legal_document' document_name='intellectual-property-policy' %}" class="footer-link">Интеллектуальная собственность</a>
               </li>
               <li class="mb-2">
                 <a href="#" class="footer-link">Вопросы и ответы</a>
@@ -290,7 +292,7 @@
               </li>
             </ul>
           </div>
-          <div class="col-lg-3 col-md-6 mb-4">
+          <div class="col-lg-2 col-md-6 mb-4">
             <h5 class="text-uppercase mb-4">Каталог</h5>
             <ul class="list-unstyled">
               <li class="mb-2">
@@ -330,6 +332,26 @@
               </li>
             </ul>
           </div>
+          <div class="col-lg-2 col-md-6 mb-4">
+            <h5 class="text-uppercase mb-4">Документы</h5>
+            <ul class="list-unstyled">
+              <li class="mb-2">
+                <a href="{% url 'store:legal_document' document_name='terms-of-service' %}" class="footer-link">Пользовательское соглашение</a>
+              </li>
+              <li class="mb-2">
+                <a href="{% url 'store:legal_document' document_name='privacy-policy' %}" class="footer-link">Политика конфиденциальности</a>
+              </li>
+              <li class="mb-2">
+                <a href="{% url 'store:legal_document' document_name='cookie-policy' %}" class="footer-link">Политика использования cookie</a>
+              </li>
+              <li class="mb-2">
+                <a href="{% url 'store:legal_document' document_name='creator-agreement' %}" class="footer-link">Соглашение с создателями</a>
+              </li>
+              <li class="mb-2">
+                <a href="{% url 'store:legal_document' document_name='content-guidelines' %}" class="footer-link">Правила размещения контента</a>
+              </li>
+            </ul>
+          </div>
           <div class="col-lg-3 col-md-6 mb-4">
             <h5 class="text-uppercase mb-4">Контакты</h5>
             <ul class="list-unstyled contact-info">
@@ -353,7 +375,7 @@
         <hr />
         <div class="row pb-3">
           <div class="col-md-6">
-            <p class="mb-0">&copy; 2025 onerai. Все права защищены.</p>
+            <p class="mb-0">&copy; 2025 ТОО "FastDev". Все права защищены.</p>
           </div>
           <div class="col-md-6 text-md-end">
             <div class="payment-icons-wrapper">

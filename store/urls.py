@@ -19,6 +19,9 @@ urlpatterns = [
     path("submission-confirmation/<int:product_id>/", views.submission_confirmation, name="submission_confirmation"),
     path("profile/", views.customer_profile, name="customer_profile"),
 
+    # Legal document routes
+    path("legal/<slug:document_name>/", views.legal_document, name="legal_document"),
+
     # Authentication routes
     path("login/", views.login_store_user, name="login"),
     path("register/", views.register_store_user, name="register"),

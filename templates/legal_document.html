@@ -1,0 +1,86 @@
+{% extends "base/base.html" %}
+{% load static %}
+
+{% block title %}{{ document_title }} | onerai Partners{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'index' %}">Главная</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{ document_title }}</li>
+        </ol>
+    </nav>
+    
+    <div class="legal-document-content">
+        {{ content|safe }}
+    </div>
+    
+    <div class="mt-4 text-center">
+        <a href="{% url 'index' %}" class="btn btn-primary">
+            <i class="fas fa-arrow-left me-2"></i>Вернуться на главную
+        </a>
+    </div>
+</div>
+{% endblock %}
+
+{% block head %}
+<style>
+    .legal-document-content {
+        background-color: #fff;
+        color: #333;
+        padding: 2rem;
+        border-radius: 8px;
+        box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    }
+    
+    .legal-document-content h1 {
+        color: #2c3e50;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 10px;
+        margin-bottom: 20px;
+    }
+    
+    .legal-document-content h2 {
+        color: #3498db;
+        margin-top: 30px;
+        margin-bottom: 15px;
+    }
+    
+    .legal-document-content p {
+        margin-bottom: 15px;
+        line-height: 1.6;
+    }
+    
+    .legal-document-content ul {
+        margin-bottom: 15px;
+    }
+    
+    .legal-document-content .date {
+        font-style: italic;
+        color: #7f8c8d;
+        margin-bottom: 30px;
+    }
+    
+    .breadcrumb {
+        background-color: transparent;
+        padding: 0.75rem 0;
+        margin-bottom: 1.5rem;
+    }
+    
+    .breadcrumb-item a {
+        color: #3498db;
+        text-decoration: none;
+    }
+    
+    .breadcrumb-item.active {
+        color: #6c757d;
+    }
+    
+    @media (max-width: 767.98px) {
+        .legal-document-content {
+            padding: 1.5rem;
+        }
+    }
+</style>
+{% endblock %}

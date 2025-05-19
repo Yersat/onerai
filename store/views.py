@@ -2,6 +2,7 @@ import os
 import base64
 import uuid
 import json
+import os.path
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth import get_user_model, login, authenticate, logout
 from django.contrib.auth.decorators import login_required
@@ -11,9 +12,10 @@ from django.core.exceptions import PermissionDenied
 from django.utils.text import slugify
 from django.core.files.base import ContentFile
 from django.urls import reverse
-from django.http import JsonResponse
+from django.http import JsonResponse, Http404
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
+from django.conf import settings
 from .models import Product, Category, ShippingAddress, Order, OrderItem, ProductRenderedImage
 from .forms import ShippingAddressForm, StoreUserRegistrationForm
 from .render_utils import create_rendered_product_images, render_design_on_tshirt
@@ -477,6 +479,47 @@ def register_store_user(request):
     else:
         form = StoreUserRegistrationForm()
     return render(request, "store/register.html", {"form": form})
+
+
+def legal_document(request, document_name):
+    """View for displaying legal documents"""
+    # Map URL slugs to actual filenames
+    document_map = {
+        'terms-of-service': 'terms_of_service.html',
+        'privacy-policy': 'privacy_policy.html',
+        'cookie-policy': 'cookie_policy.html',
+        'return-policy': 'return_policy.html',
+        'shipping-policy': 'shipping_policy.html',
+        'payment-terms': 'payment_terms.html',
+        'content-guidelines': 'content_guidelines.html',
+        'creator-agreement': 'creator_agreement.html',
+        'intellectual-property-policy': 'intellectual_property_policy.html',
+        'dispute-resolution-policy': 'dispute_resolution_policy.html',
+        'age-restrictions-policy': 'age_restrictions_policy.html',
+    }
+
+    # Check if the requested document exists in our map
+    if document_name not in document_map:
+        raise Http404("Запрашиваемый документ не найден")
+
+    # Get the actual filename
+    filename = document_map[document_name]
+    file_path = os.path.join(settings.BASE_DIR, 'legal', filename)
+
+    # Check if the file exists
+    if not os.path.exists(file_path):
+        raise Http404(f"Документ {filename} не найден")
+
+    # Read the file content
+    with open(file_path, 'r', encoding='utf-8') as f:
+        content = f.read()
+
+    # Return the content as a response
+    return render(request, 'store/legal_document.html', {
+        'content': content,
+        'document_name': document_name,
+        'document_title': document_name.replace('-', ' ').title()
+    })
 
 
 @csrf_exempt
