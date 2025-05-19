@@ -73,7 +73,7 @@ class ProductAdmin(admin.ModelAdmin):
     approval_status_colored.short_description = "Статус проверки"
 
     def approve_products(self, request, queryset):
-        updated = queryset.update(approval_status=Product.STATUS_APPROVED, admin_feedback="")
+        updated = queryset.update(approval_status=Product.STATUS_APPROVED, is_active=True, admin_feedback="")
         self.message_user(request, f"{updated} дизайн(ов) успешно одобрено.")
 
     approve_products.short_description = "Одобрить выбранные дизайны"

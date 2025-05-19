@@ -178,7 +178,7 @@ def design_status(request, product_id):
         # Return the status
         return JsonResponse({
             'success': True,
-            'status': 'approved' if product.is_active else 'pending',
+            'status': product.approval_status,
             'feedback': product.admin_feedback or ''
         })
     except Product.DoesNotExist:
