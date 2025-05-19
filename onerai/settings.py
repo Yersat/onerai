@@ -11,6 +11,11 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
+import os
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -77,8 +82,12 @@ WSGI_APPLICATION = "onerai.wsgi.application"
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": os.environ.get("ONERAI_DB_NAME", "onerai"),
+        "USER": os.environ.get("ONERAI_DB_USER", "onerai_user"),
+        "PASSWORD": os.environ.get("ONERAI_DB_PASSWORD", "onerai_password"),
+        "HOST": os.environ.get("ONERAI_DB_HOST", "localhost"),
+        "PORT": os.environ.get("ONERAI_DB_PORT", "5432"),
     }
 }
 
@@ -142,4 +151,4 @@ DATA_UPLOAD_MAX_MEMORY_SIZE = 52428800  # 50MB
 FILE_UPLOAD_MAX_MEMORY_SIZE = 52428800  # 50MB
 
 # API settings
-API_KEY = 'onerai_partners_api_key_2024'  # Must match the key in the partners_onerai project
+API_KEY = os.environ.get('API_KEY', 'onerai_partners_api_key_2024')  # Must match the key in the partners_onerai project

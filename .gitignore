@@ -36,3 +36,6 @@ node_modules/
 
 # Rendered test images
 temp_rendered_*.jpg
+
+# Database dumps
+*_data.json

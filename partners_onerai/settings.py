@@ -3,6 +3,11 @@ Django settings for partners_onerai project.
 """
 
 from pathlib import Path
+import os
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -30,7 +35,6 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "designs",  # New app for designs
-    "accounts",  # App for user accounts
 ]
 
 MIDDLEWARE = [
@@ -69,8 +73,12 @@ WSGI_APPLICATION = "partners_onerai.wsgi.application"
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": os.environ.get("PARTNERS_ONERAI_DB_NAME", "partners_onerai"),
+        "USER": os.environ.get("PARTNERS_ONERAI_DB_USER", "partners_onerai_user"),
+        "PASSWORD": os.environ.get("PARTNERS_ONERAI_DB_PASSWORD", "partners_onerai_password"),
+        "HOST": os.environ.get("PARTNERS_ONERAI_DB_HOST", "localhost"),
+        "PORT": os.environ.get("PARTNERS_ONERAI_DB_PORT", "5432"),
     }
 }
 
@@ -125,7 +133,7 @@ MEDIA_ROOT = BASE_DIR / "media"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Authentication settings
-LOGIN_URL = "accounts:login"
+LOGIN_URL = "login"
 LOGIN_REDIRECT_URL = "index"
 LOGOUT_REDIRECT_URL = "index"
 
@@ -134,8 +142,8 @@ DATA_UPLOAD_MAX_MEMORY_SIZE = 52428800  # 50MB
 FILE_UPLOAD_MAX_MEMORY_SIZE = 52428800  # 50MB
 
 # API settings for onerai service
-API_KEY = 'your_secret_api_key'  # Must match the key in the onerai project
-ONERAI_API_URL = 'http://127.0.0.1:8000'  # URL of the onerai service
+API_KEY = os.environ.get('API_KEY', 'your_secret_api_key')  # Must match the key in the onerai project
+ONERAI_API_URL = os.environ.get('ONERAI_API_URL', 'http://127.0.0.1:8000')  # URL of the onerai service
 
 # Shared media settings
 ONERAI_MEDIA_ROOT = None  # Path to onerai media directory for direct file system access
