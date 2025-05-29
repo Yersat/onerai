@@ -30,4 +30,9 @@ urlpatterns = [
     # API routes
     path("api/designs/submit/", api.submit_design, name="api_submit_design"),
     path("api/designs/status/<int:product_id>/", api.design_status, name="api_design_status"),
+
+    # Freedom Pay payment routes
+    path("payment/freedompay/result/", views.freedompay_result, name="freedompay_result"),
+    path("payment/freedompay/success/", views.freedompay_success, name="freedompay_success"),
+    path("payment/freedompay/failure/", views.freedompay_failure, name="freedompay_failure"),
 ]

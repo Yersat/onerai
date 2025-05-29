@@ -152,3 +152,52 @@ FILE_UPLOAD_MAX_MEMORY_SIZE = 52428800  # 50MB
 
 # API settings
 API_KEY = os.environ.get('API_KEY', 'onerai_partners_api_key_2024')  # Must match the key in the partners_onerai project
+
+# Freedom Pay settings
+FREEDOM_PAY_MERCHANT_ID = os.environ.get('FREEDOM_PAY_MERCHANT_ID', '')
+FREEDOM_PAY_SECRET_KEY = os.environ.get('FREEDOM_PAY_SECRET_KEY', '')
+FREEDOM_PAY_API_URL = os.environ.get('FREEDOM_PAY_API_URL', 'https://test-api.freedompay.kz')  # Use test URL by default
+FREEDOM_PAY_TESTING_MODE = os.environ.get('FREEDOM_PAY_TESTING_MODE', '1')  # 1 for test, 0 for production
+
+# Logging configuration
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{levelname} {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
+        },
+        'file': {
+            'class': 'logging.FileHandler',
+            'filename': 'django.log',
+            'formatter': 'verbose',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'INFO',
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console', 'file'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+        'store.freedompay_service': {
+            'handlers': ['console', 'file'],
+            'level': 'DEBUG',  # Enable detailed logging for debugging
+            'propagate': False,
+        },
+    },
+}

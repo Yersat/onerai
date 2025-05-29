@@ -12,13 +12,14 @@ from django.core.exceptions import PermissionDenied
 from django.utils.text import slugify
 from django.core.files.base import ContentFile
 from django.urls import reverse
-from django.http import JsonResponse, Http404
+from django.http import JsonResponse, Http404, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from django.conf import settings
 from .models import Product, Category, ShippingAddress, Order, OrderItem, ProductRenderedImage
 from .forms import ShippingAddressForm, StoreUserRegistrationForm
 from .render_utils import create_rendered_product_images, render_design_on_tshirt
+from .freedompay_service import FreedomPayService
 
 User = get_user_model()
 
@@ -377,9 +378,32 @@ def checkout(request):
         request.session['cart'] = []
         request.session.modified = True
 
-        # Redirect to order confirmation page
-        messages.success(request, "Заказ успешно оформлен! Мы свяжемся с вами для подтверждения и оплаты.")
-        return redirect("store:order_confirmation", order_id=order.id)
+        # Initialize payment with Freedom Pay
+        try:
+            freedompay_service = FreedomPayService()
+            payment_result = freedompay_service.init_payment(order, request)
+
+            if payment_result['success']:
+                payment_data = payment_result['data']
+
+                # Store payment ID in order
+                order.payment_id = payment_data.get('pg_payment_id')
+                order.save()
+
+                # Redirect to Freedom Pay payment page
+                redirect_url = payment_data.get('pg_redirect_url')
+                if redirect_url:
+                    return redirect(redirect_url)
+                else:
+                    messages.error(request, "Ошибка при инициализации платежа. Попробуйте еще раз.")
+                    return redirect("store:checkout")
+            else:
+                messages.error(request, f"Ошибка платежной системы: {payment_result.get('error', 'Неизвестная ошибка')}")
+                return redirect("store:checkout")
+
+        except Exception as e:
+            messages.error(request, f"Ошибка при обработке платежа: {str(e)}")
+            return redirect("store:checkout")
 
     context = {
         'cart_items': cart_items,
@@ -602,3 +626,112 @@ def logout_view(request):
     logout(request)
     messages.success(request, "Вы успешно вышли из аккаунта.")
     return redirect("store:index")
+
+
+# Freedom Pay payment views
+@csrf_exempt
+@require_POST
+def freedompay_result(request):
+    """Handle Freedom Pay payment result callback"""
+    try:
+        freedompay_service = FreedomPayService()
+        result = freedompay_service.process_payment_result(request.POST.dict())
+
+        order_id = result.get('order_id')
+        payment_id = result.get('payment_id')
+
+        if order_id:
+            try:
+                order = Order.objects.get(id=order_id)
+
+                if result['status'] == 'ok':
+                    # Payment successful
+                    order.payment_status = Order.PAYMENT_STATUS_PAID
+                    order.payment_id = payment_id
+                    order.status = Order.STATUS_PROCESSING
+                    order.save()
+
+                elif result['status'] == 'rejected':
+                    # Payment failed
+                    order.payment_status = Order.PAYMENT_STATUS_FAILED
+                    order.save()
+
+            except Order.DoesNotExist:
+                pass
+
+        # Return XML response to Freedom Pay
+        response_data = {
+            'pg_status': result['status'],
+            'pg_description': result['description'],
+            'pg_salt': freedompay_service.generate_salt()
+        }
+
+        # Generate signature for response
+        response_data['pg_sig'] = freedompay_service.generate_signature('', response_data)
+
+        # Build XML response
+        xml_response = f'''<?xml version="1.0" encoding="utf-8"?>
+<response>
+    <pg_status>{response_data['pg_status']}</pg_status>
+    <pg_description>{response_data['pg_description']}</pg_description>
+    <pg_salt>{response_data['pg_salt']}</pg_salt>
+    <pg_sig>{response_data['pg_sig']}</pg_sig>
+</response>'''
+
+        return HttpResponse(xml_response, content_type='application/xml')
+
+    except Exception as e:
+        # Return error response
+        xml_response = f'''<?xml version="1.0" encoding="utf-8"?>
+<response>
+    <pg_status>error</pg_status>
+    <pg_description>Processing error: {str(e)}</pg_description>
+</response>'''
+
+        return HttpResponse(xml_response, content_type='application/xml')
+
+
+def freedompay_success(request):
+    """Handle successful payment redirect from Freedom Pay"""
+    order_id = request.GET.get('pg_order_id')
+    payment_id = request.GET.get('pg_payment_id')
+    test_mode = request.GET.get('test_mode')
+
+    if order_id:
+        try:
+            order = Order.objects.get(id=order_id, user=request.user)
+
+            # If this is a test mode payment, update the order status
+            if test_mode == '1':
+                order.payment_status = Order.PAYMENT_STATUS_PAID
+                order.payment_id = payment_id
+                order.status = Order.STATUS_PROCESSING
+                order.save()
+                messages.success(request, "Тестовый платеж успешно обработан! Ваш заказ принят в обработку.")
+            else:
+                messages.success(request, "Платеж успешно обработан! Ваш заказ принят в обработку.")
+
+            return redirect("store:order_confirmation", order_id=order.id)
+        except Order.DoesNotExist:
+            messages.error(request, "Заказ не найден.")
+            return redirect("store:index")
+    else:
+        messages.success(request, "Платеж успешно обработан!")
+        return redirect("store:index")
+
+
+def freedompay_failure(request):
+    """Handle failed payment redirect from Freedom Pay"""
+    order_id = request.GET.get('pg_order_id')
+
+    if order_id:
+        try:
+            order = Order.objects.get(id=order_id, user=request.user)
+            messages.error(request, "Ошибка при обработке платежа. Попробуйте еще раз или выберите другой способ оплаты.")
+            return redirect("store:checkout")
+        except Order.DoesNotExist:
+            messages.error(request, "Заказ не найден.")
+            return redirect("store:index")
+    else:
+        messages.error(request, "Ошибка при обработке платежа.")
+        return redirect("store:index")

@@ -1,0 +1,32 @@
+[Unit]
+Description=Partners Onerai Django Application
+After=network.target postgresql.service
+Requires=postgresql.service
+
+[Service]
+Type=notify
+User=www-data
+Group=www-data
+WorkingDirectory=/var/www/partners_onerai
+Environment=PATH=/var/www/partners_onerai/venv/bin
+Environment=DJANGO_SETTINGS_MODULE=partners_onerai.settings_production
+ExecStart=/var/www/partners_onerai/venv/bin/gunicorn --config /var/www/partners_onerai/gunicorn_partners.conf.py partners_onerai.wsgi:application
+ExecReload=/bin/kill -s HUP $MAINPID
+KillMode=mixed
+TimeoutStopSec=5
+PrivateTmp=true
+Restart=always
+RestartSec=10
+
+# Security settings
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/www/partners_onerai/media /var/log/partners_onerai /var/run/partners_onerai
+PrivateDevices=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+
+[Install]
+WantedBy=multi-user.target

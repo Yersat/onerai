@@ -132,11 +132,26 @@ class Order(models.Model):
         (STATUS_CANCELLED, "Отменен"),
     ]
 
+    # Payment status choices
+    PAYMENT_STATUS_PENDING = "pending"
+    PAYMENT_STATUS_PAID = "paid"
+    PAYMENT_STATUS_FAILED = "failed"
+    PAYMENT_STATUS_REFUNDED = "refunded"
+
+    PAYMENT_STATUS_CHOICES = [
+        (PAYMENT_STATUS_PENDING, "Ожидает оплаты"),
+        (PAYMENT_STATUS_PAID, "Оплачен"),
+        (PAYMENT_STATUS_FAILED, "Ошибка оплаты"),
+        (PAYMENT_STATUS_REFUNDED, "Возвращен"),
+    ]
+
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="orders")
     shipping_address = models.ForeignKey(ShippingAddress, on_delete=models.SET_NULL, null=True, related_name="orders")
     total_price = models.DecimalField(max_digits=10, decimal_places=2)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=STATUS_PENDING)
+    payment_status = models.CharField(max_length=20, choices=PAYMENT_STATUS_CHOICES, default=PAYMENT_STATUS_PENDING)
     payment_id = models.CharField(max_length=100, blank=True, null=True)
+    payment_method = models.CharField(max_length=50, blank=True, null=True)
     tracking_number = models.CharField(max_length=100, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

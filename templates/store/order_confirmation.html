@@ -51,6 +51,17 @@
                         <span class="badge bg-danger">Отменен</span>
                       {% endif %}
                     </p>
+                    <p class="mb-1">Статус оплаты:
+                      {% if order.payment_status == 'pending' %}
+                        <span class="badge bg-warning">Ожидает оплаты</span>
+                      {% elif order.payment_status == 'paid' %}
+                        <span class="badge bg-success">Оплачен</span>
+                      {% elif order.payment_status == 'failed' %}
+                        <span class="badge bg-danger">Ошибка оплаты</span>
+                      {% elif order.payment_status == 'refunded' %}
+                        <span class="badge bg-secondary">Возвращен</span>
+                      {% endif %}
+                    </p>
                     <p class="mb-0">Сумма: {{ order.total_price }} ₸</p>
                   </div>
                   <div class="col-md-6 text-md-start mt-3 mt-md-0">
@@ -108,9 +119,23 @@
               </div>
             </div>
 
-            <div class="alert alert-info mb-4">
-              <h5 class="alert-heading">Что дальше?</h5>
-              <p>Спасибо за ваш заказ! Наш менеджер свяжется с вами в ближайшее время для подтверждения заказа и обсуждения способа оплаты.</p>
+            <div class="alert {% if order.payment_status == 'paid' %}alert-success{% elif order.payment_status == 'failed' %}alert-danger{% else %}alert-info{% endif %} mb-4">
+              <h5 class="alert-heading">
+                {% if order.payment_status == 'paid' %}
+                  Заказ оплачен!
+                {% elif order.payment_status == 'failed' %}
+                  Ошибка оплаты
+                {% else %}
+                  Что дальше?
+                {% endif %}
+              </h5>
+              {% if order.payment_status == 'paid' %}
+                <p>Спасибо за оплату! Ваш заказ принят в обработку. Мы начнем изготовление ваших товаров и свяжемся с вами для уточнения деталей доставки.</p>
+              {% elif order.payment_status == 'failed' %}
+                <p>К сожалению, произошла ошибка при обработке платежа. Пожалуйста, попробуйте оформить заказ еще раз или свяжитесь с нами для помощи.</p>
+              {% else %}
+                <p>Спасибо за ваш заказ! Наш менеджер свяжется с вами в ближайшее время для подтверждения заказа и обсуждения способа оплаты.</p>
+              {% endif %}
               <hr>
               <p class="mb-0">Если у вас возникнут вопросы по заказу, пожалуйста, свяжитесь с нами по телефону или электронной почте.</p>
             </div>
