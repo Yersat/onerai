@@ -110,6 +110,10 @@ class ShippingAddress(models.Model):
     def __str__(self):
         return f"{self.full_name}, {self.city}"
 
+    def get_full_address(self):
+        """Return the full formatted address."""
+        return f"{self.address}, {self.city}, {self.postal_code}"
+
     def save(self, *args, **kwargs):
         # If this address is set as default, unset default for other addresses
         if self.is_default:

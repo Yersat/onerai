@@ -159,6 +159,22 @@ FREEDOM_PAY_SECRET_KEY = os.environ.get('FREEDOM_PAY_SECRET_KEY', '')
 FREEDOM_PAY_API_URL = os.environ.get('FREEDOM_PAY_API_URL', 'https://test-api.freedompay.kz')  # Use test URL by default
 FREEDOM_PAY_TESTING_MODE = os.environ.get('FREEDOM_PAY_TESTING_MODE', '1')  # 1 for test, 0 for production
 
+# Email settings - Currently using dummy backend (Telegram-only notifications)
+# To enable email notifications, change EMAIL_BACKEND to 'django.core.mail.backends.smtp.EmailBackend'
+# and configure EMAIL_HOST_USER and EMAIL_HOST_PASSWORD
+EMAIL_BACKEND = os.environ.get('EMAIL_BACKEND', 'django.core.mail.backends.dummy.EmailBackend')
+EMAIL_HOST = os.environ.get('EMAIL_HOST', 'smtp.gmail.com')
+EMAIL_PORT = int(os.environ.get('EMAIL_PORT', '587'))
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
+DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'noreply@onerai.kz')
+ADMIN_EMAIL = os.environ.get('ADMIN_EMAIL', 'info@fastdev.org')
+
+# Telegram notification settings
+TELEGRAM_BOT_TOKEN = os.environ.get('TELEGRAM_BOT_TOKEN', '7616528096:AAFEgelyZX5sPOz1hT5-xmL0sk0ssiL3SFY')
+TELEGRAM_CHAT_ID = os.environ.get('TELEGRAM_CHAT_ID', '344949399')
+
 # Logging configuration
 LOGGING = {
     'version': 1,
