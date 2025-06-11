@@ -74,6 +74,15 @@ def submit_design(request):
         # Parse the JSON data
         data = json.loads(request.body)
 
+        # Validate required fields
+        required_fields = ['name', 'description', 'price', 'creator_email']
+        missing_fields = [field for field in required_fields if not data.get(field)]
+        if missing_fields:
+            return JsonResponse({
+                'success': False,
+                'error': f"Missing required fields: {', '.join(missing_fields)}"
+            }, status=400)
+
         # Get or create the category
         category, _ = Category.objects.get_or_create(
             name=data.get('category_name', 'Uncategorized'),
@@ -81,10 +90,24 @@ def submit_design(request):
         )
 
         # Get or create the creator
+        creator_email = data.get('creator_email')
+        creator_username = data.get('creator_username')
+
+        # Ensure username is not empty - use email as fallback
+        if not creator_username or creator_username.strip() == '':
+            creator_username = creator_email.split('@')[0] if creator_email else f'user_{data.get("name", "unknown").lower().replace(" ", "_")}'
+
+        # Ensure username is unique by appending a number if needed
+        original_username = creator_username
+        counter = 1
+        while User.objects.filter(username=creator_username).exists():
+            creator_username = f"{original_username}_{counter}"
+            counter += 1
+
         creator, _ = User.objects.get_or_create(
-            email=data.get('creator_email'),
+            email=creator_email,
             defaults={
-                'username': data.get('creator_username'),
+                'username': creator_username,
                 'first_name': data.get('creator_first_name', ''),
                 'last_name': data.get('creator_last_name', '')
             }
