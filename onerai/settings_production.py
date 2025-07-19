@@ -1,5 +1,5 @@
 """
-Production settings for onerai project.
+Production settings for onerai project - Railway optimized.
 """
 
 from .settings import *
@@ -13,13 +13,19 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 if not SECRET_KEY:
     raise ValueError("SECRET_KEY environment variable must be set in production")
 
-# Production allowed hosts
+# Production allowed hosts - Railway specific
 ALLOWED_HOSTS = [
     'onerai.kz',
     'www.onerai.kz',
-    '195.49.212.182',  # Your server IP
-    'localhost',  # For local testing
+    '.railway.app',  # Railway subdomain
+    '127.0.0.1',
+    'localhost',
 ]
+
+# Add Railway's internal network
+RAILWAY_STATIC_URL = os.environ.get('RAILWAY_STATIC_URL', '')
+if RAILWAY_STATIC_URL:
+    ALLOWED_HOSTS.append(RAILWAY_STATIC_URL)
 
 # Security settings for production
 SECURE_BROWSER_XSS_FILTER = True
@@ -34,30 +40,40 @@ SECURE_HSTS_PRELOAD = True
 # SESSION_COOKIE_SECURE = True
 # CSRF_COOKIE_SECURE = True
 
-# Database for production
+# Database for production - Railway PostgreSQL
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ.get('ONERAI_DB_NAME', 'onerai_prod'),
-        'USER': os.environ.get('ONERAI_DB_USER', 'onerai_user'),
-        'PASSWORD': os.environ.get('ONERAI_DB_PASSWORD'),
-        'HOST': os.environ.get('ONERAI_DB_HOST', 'localhost'),
-        'PORT': os.environ.get('ONERAI_DB_PORT', '5432'),
+        'NAME': os.environ.get('PGDATABASE'),
+        'USER': os.environ.get('PGUSER'),
+        'PASSWORD': os.environ.get('PGPASSWORD'),
+        'HOST': os.environ.get('PGHOST'),
+        'PORT': os.environ.get('PGPORT', '5432'),
         'OPTIONS': {
-            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+            'sslmode': 'require',
         },
     }
 }
 
-# Static files for production
-STATIC_ROOT = '/var/www/onerai/static/'
-MEDIA_ROOT = '/var/www/onerai/media/'
+# Static files for production - Railway optimized
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+MEDIA_ROOT = BASE_DIR / 'media'
+
+# Railway static files configuration with whitenoise
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+# Add whitenoise for static file serving
+MIDDLEWARE.insert(1, 'whitenoise.middleware.WhiteNoiseMiddleware')
+
+# Whitenoise settings
+WHITENOISE_USE_FINDERS = True
+WHITENOISE_AUTOREFRESH = True
 
 # Freedom Pay production settings
 FREEDOM_PAY_API_URL = os.environ.get('FREEDOM_PAY_API_URL', 'https://api.freedompay.kz')
 FREEDOM_PAY_TESTING_MODE = os.environ.get('FREEDOM_PAY_TESTING_MODE', '0')  # Production mode
 
-# Logging for production
+# Logging for production - Railway optimized
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -72,38 +88,23 @@ LOGGING = {
         },
     },
     'handlers': {
-        'file': {
-            'class': 'logging.handlers.RotatingFileHandler',
-            'filename': '/var/log/onerai/django.log',
-            'maxBytes': 1024*1024*10,  # 10MB
-            'backupCount': 5,
-            'formatter': 'verbose',
-        },
-        'error_file': {
-            'class': 'logging.handlers.RotatingFileHandler',
-            'filename': '/var/log/onerai/django_error.log',
-            'maxBytes': 1024*1024*10,  # 10MB
-            'backupCount': 5,
-            'formatter': 'verbose',
-            'level': 'ERROR',
-        },
         'console': {
             'class': 'logging.StreamHandler',
-            'formatter': 'simple',
+            'formatter': 'verbose',
         },
     },
     'root': {
-        'handlers': ['file', 'console'],
+        'handlers': ['console'],
         'level': 'INFO',
     },
     'loggers': {
         'django': {
-            'handlers': ['file', 'error_file'],
+            'handlers': ['console'],
             'level': 'INFO',
             'propagate': False,
         },
         'store.freedompay_service': {
-            'handlers': ['file', 'error_file'],
+            'handlers': ['console'],
             'level': 'WARNING',  # Reduce noise in production
             'propagate': False,
         },
@@ -126,15 +127,37 @@ ADMIN_EMAIL = os.environ.get('ADMIN_EMAIL', 'info@fastdev.org')
 TELEGRAM_BOT_TOKEN = os.environ.get('TELEGRAM_BOT_TOKEN', '7616528096:AAFEgelyZX5sPOz1hT5-xmL0sk0ssiL3SFY')
 TELEGRAM_CHAT_ID = os.environ.get('TELEGRAM_CHAT_ID', '344949399')
 
-# Cache settings for production
-CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.redis.RedisCache',
-        'LOCATION': 'redis://127.0.0.1:6379/1',
+# Cache settings for production - Railway Redis (optional)
+REDIS_URL = os.environ.get('REDIS_URL')
+if REDIS_URL:
+    CACHES = {
+        'default': {
+            'BACKEND': 'django.core.cache.backends.redis.RedisCache',
+            'LOCATION': REDIS_URL,
+        }
     }
-}
+else:
+    # Fallback to database cache if Redis not available
+    CACHES = {
+        'default': {
+            'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
+            'LOCATION': 'cache_table',
+        }
+    }
 
 # Session settings
 SESSION_COOKIE_AGE = 86400  # 24 hours
 SESSION_SAVE_EVERY_REQUEST = True
 SESSION_EXPIRE_AT_BROWSER_CLOSE = False
+
+# Railway multi-service configuration
+PARTNERS_ONERAI_URL = os.environ.get('PARTNERS_ONERAI_URL', 'https://partners.onerai.kz')
+
+# CORS settings for API communication (if needed)
+CORS_ALLOWED_ORIGINS = [
+    "https://partners.onerai.kz",
+    "https://onerai.kz",
+]
+
+# Internal API settings
+INTERNAL_API_KEY = os.environ.get('API_KEY', 'onerai_partners_api_key_2024')
