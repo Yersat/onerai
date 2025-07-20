@@ -2,7 +2,7 @@
 Production settings for partners_onerai project - Railway optimized.
 """
 
-from .settings import *
+from partners_onerai.settings import *
 import os
 
 # SECURITY WARNING: don't run with debug turned on in production!
