@@ -11,3 +11,4 @@ restartPolicyMaxRetries = 10
 DJANGO_SETTINGS_MODULE = "onerai.settings_production"
 PYTHONPATH = "/app"
 PYTHON_VERSION = "3.11.9"
+PIP_BREAK_SYSTEM_PACKAGES = "1"
